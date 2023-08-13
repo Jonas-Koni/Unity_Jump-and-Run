@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,9 +13,6 @@ public class levelGenerator : MonoBehaviour
     private GameObject character;
     private Rigidbody2D rb;
     private charakter cs;
-
-    private Vector3[] PositionList;
-    //private Level[] levels;
     private GameObject[] GoLevels;
 
     private void Start()
@@ -23,39 +21,35 @@ public class levelGenerator : MonoBehaviour
         rb = character.GetComponent<Rigidbody2D>();
         cs = character.GetComponent<charakter>();
 
-        //GameObject go = new GameObject();
-        //go.AddComponent<Level>();
-
-        //levels = new Level[7];
-
-        //first level
         GoLevels = new GameObject[7];
         Level firstLevel;
         GameObject GoFirstLevel = new GameObject("Plains");
         firstLevel = GoFirstLevel.AddComponent<Plains>();
         firstLevel.cs = cs;
         firstLevel.rb = rb;
+        firstLevel.levelId = 0;
         firstLevel.PosStart = new Vector2(-7f, 0f);
         firstLevel.generateSection(seed);
         GoLevels[0] = GoFirstLevel;
 
         //level 2-7
-        for(int i = 1; i < GoLevels.Length; i++)
+        for (int i = 1; i < GoLevels.Length; i++)
         {
-            GenerateLevel(i,i);
+            GenerateLevel(i, i);
         }
+        displayPlatform();
+
     }
 
     private void Awake()
     {
-
+        
     }
 
     private void Update()
     {
-        UnityEngine.Debug.Log("hi");
-        checkLevel(transform.position.x);
-        displayPlatform();
+        //UnityEngine.Debug.Log("hi");
+        checkLevel(rb.transform.position.x);
 
     }
 
@@ -71,7 +65,8 @@ public class levelGenerator : MonoBehaviour
                 newLevel = GoNewLevel.AddComponent<Plains>();
                 newLevel.rb = rb;
                 newLevel.cs = cs;
-                newLevel.PosStart = new Vector2(GoLevels[levelId - 1].GetComponent<Plains>().PosEnd.x + 1f, GoLevels[levelId - 1].GetComponent<Plains>().PosEnd.y);
+                newLevel.levelId = levelId;
+                newLevel.PosStart = new Vector2(GoLevels[positionInLevels-1].GetComponent<Plains>().PosEnd.x + 1f, GoLevels[positionInLevels-1].GetComponent<Plains>().PosEnd.y);
                 newLevel.generateSection(seed);
                 break;
             default:
@@ -86,19 +81,33 @@ public class levelGenerator : MonoBehaviour
 
     public void checkLevel(float posX)
     {
+
         int levelId = GoLevels[2].GetComponent<Level>().levelId;
         Boolean PlayerRightLevel = posX > GoLevels[GoLevels.Length-2].GetComponent<Level>().PosEnd.x;
-        if(PlayerRightLevel)
-        {
-            //if (levelId > 5)
+
+        if (PlayerRightLevel)
+        {  
+            Destroy(GoLevels[1].GetComponent<Level>().gameObject);
+            for (int i = 1; i < GoLevels.Length - 1; i++)
             {
-                for(int i = 1; i < GoLevels.Length-1; i++)
-                {
-                    GoLevels[i] = GoLevels[i + 1];
-                }
-                GenerateLevel(6, GoLevels[GoLevels.Length - 2].GetComponent<Level>().levelId);
+                GoLevels[i] = GoLevels[i + 1];
             }
+            GenerateLevel(6, GoLevels[GoLevels.Length - 2].GetComponent<Level>().levelId + 1);
+
+
+            GameObject[] GoGrass = GameObject.FindGameObjectsWithTag("grass");
+            for(int g = 0; g < GoGrass.Length; g++)
+            {
+                Destroy(GoGrass[g]);
+            }
+            displayPlatform();
         }
+        for(int h = 0; h < GoLevels.Length; h++)
+        {
+            UnityEngine.Debug.Log("h: " + h + "; X: " + GoLevels[h].GetComponent<Level>().PosStart + "; Id: " + GoLevels[h].GetComponent<Level>().levelId);
+        }
+        
+        
     }
 
     public int getLevelState (int level)
@@ -108,8 +117,8 @@ public class levelGenerator : MonoBehaviour
             return (int) levelState.plains;
         }
         return (int)levelState.plains;
-        System.Random random = new System.Random(level);
-        return (int) random.Next(0, 7);
+        //System.Random random = new System.Random(level);
+        //return (int) random.Next(0, 7);
     }
 
     public void displayPlatform()
@@ -122,8 +131,7 @@ public class levelGenerator : MonoBehaviour
             {
                 continue;
             }
-            GoLevels[i].GetComponent<Level>().displayLevel(GoLevels, i, grass);  
+            GoLevels[i].GetComponent<Level>().displayLevel(GoLevels, i, grass);
         }
-        Destroy(this);
     }
 }

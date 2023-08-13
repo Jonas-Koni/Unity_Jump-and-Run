@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Plains : Level
 {
-    [SerializeField] private Transform grass;
-
     public Vector3[] platforms { get; set; }
     public Plains(int levelId)
     {
@@ -16,12 +15,13 @@ public class Plains : Level
     public override void displayLevel(GameObject[] levels, int positionInLevels, Transform grass)
     {
         Vector3[] PositionList = ((Plains)(levels[positionInLevels]).GetComponent<Level>()).platforms;
+
         for (int i = 0; i < PositionList.Length; i++)
         {
             for (int l = 0; l < PositionList[i].z; l++)
             {
-                Instantiate(grass, new Vector2(PositionList[i].x + 1.7f * l, -4.2f + PositionList[i].y), Quaternion.identity);
-            }
+                Instantiate(grass.gameObject, new Vector2(PositionList[i].x + 1.7f * l, -4.2f + PositionList[i].y), Quaternion.identity);
+            } 
         }
     }
 

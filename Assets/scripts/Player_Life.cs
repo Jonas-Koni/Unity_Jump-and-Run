@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player_Life : MonoBehaviour
 {
     private Animator animator;
-    private Rigidbody2D rigidbody;
+    private new Rigidbody2D rigidbody;
     
     private void Start()
     {
