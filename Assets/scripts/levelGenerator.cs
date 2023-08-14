@@ -104,7 +104,7 @@ public class levelGenerator : MonoBehaviour
         }
         for(int h = 0; h < GoLevels.Length; h++)
         {
-            UnityEngine.Debug.Log("h: " + h + "; X: " + GoLevels[h].GetComponent<Level>().PosStart + "; Id: " + GoLevels[h].GetComponent<Level>().levelId);
+            //UnityEngine.Debug.Log("h: " + h + "; X: " + GoLevels[h].GetComponent<Level>().PosStart + "; Id: " + GoLevels[h].GetComponent<Level>().levelId);
         }
         
         

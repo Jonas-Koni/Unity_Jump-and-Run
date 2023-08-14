@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Diagnostics;
 using UnityEngine.UIElements;
 
@@ -21,6 +22,8 @@ public class charakter : MonoBehaviour
     private float New;
     private float time;
 
+    public Joystick joystick;
+
     public static bool isMovable;
 
     private float dirX;
@@ -28,6 +31,8 @@ public class charakter : MonoBehaviour
     [SerializeField] public float moveSpeed;
 
     [SerializeField] private LayerMask jumpableGround;
+
+
 
     private enum MovementState { idle, running, jumping, falling }
 
@@ -50,29 +55,40 @@ public class charakter : MonoBehaviour
 
     void Update()
     {
+        if(joystick.Horizontal > .2f)
+        {
+            dirX = 1;
+        } else if(joystick.Horizontal < -.2f)
+        {
+            dirX = -1;
+        } else { dirX = 0; }
+        if(joystick.Vertical > .4f && isGrounded())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            time = Time.time;
+        }
+
         if (isMovable)
         {
             moveHorizontal();
         }
         UpdateAnimationState();
-        Jump();
+        //Jump();
         moveCamera();
         if(!isGrounded())
         {
-            
             New = rb.position.y;
             float deltaTime = Time.time - time;
-            //UnityEngine.Debug.Log(rb.velocity.y + " time: " + deltaTime);
-            //UnityEngine.Debug.Log(rb.position.x + " time: " + deltaTime);
             old = New;
-            //UnityEngine.Debug.Log();
 
         }
     }
-
-    private void moveHorizontal()
+    public void changeDirX(InputAction.CallbackContext context)
     {
-        dirX = Input.GetAxisRaw("Horizontal");
+        dirX = context.ReadValue<Vector2>().x;
+    }
+    public void moveHorizontal()
+    {
         rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
     }
 
@@ -106,9 +122,10 @@ public class charakter : MonoBehaviour
         animator.SetInteger("state", (int)state);
     }
 
-    private void Jump()
+    public void Jump(InputAction.CallbackContext context)
     {
-        if (Input.GetButtonDown("Jump") && isGrounded())
+        //if (Input.GetButtonDown("Jump") && isGrounded())
+        if (isGrounded() && context.started)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             time = Time.time;

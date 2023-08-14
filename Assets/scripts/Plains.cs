@@ -28,7 +28,7 @@ public class Plains : Level
     public override void generateSection(int seed)
     {
         Vector2 Range = new Vector2(0.5f, 2.0f);
-        platforms = new Vector3[2];
+        platforms = new Vector3[9];
         platforms[0] = new Vector3(PosStart.x, PosStart.y, 10);
 
         for (int i = 1; i < platforms.Length - 1; i++)
@@ -82,6 +82,5 @@ public class Plains : Level
         platforms[platforms.Length - 1] = new Vector3(lastPosX, lastPosY, 3);
 
         PosEnd = new Vector2(lastPosX + platforms[platforms.Length - 1].z * 1.7f, lastPosY);
-        //return platforms;
     }
 }

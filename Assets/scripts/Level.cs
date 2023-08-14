@@ -7,7 +7,6 @@ public class Level : MonoBehaviour
 {
 
     public int levelId { get; set; }
-    public Boolean isGenerated { get; set; }
     public Rigidbody2D rb { get; set; }
     public charakter cs { get; set; }
     public Vector2 PosStart { get; set; }
