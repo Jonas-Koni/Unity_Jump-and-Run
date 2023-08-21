@@ -6,6 +6,7 @@ using System.Threading;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using System.Diagnostics;
 using UnityEngine.UIElements;
 
@@ -18,10 +19,6 @@ public class charakter : MonoBehaviour
     private Animator animator;
     private GameObject CameraReflection;
 
-    private float old;
-    private float New;
-    private float time;
-
     public Joystick joystick;
 
     public static bool isMovable;
@@ -31,8 +28,6 @@ public class charakter : MonoBehaviour
     [SerializeField] public float moveSpeed;
 
     [SerializeField] private LayerMask jumpableGround;
-
-
 
     private enum MovementState { idle, running, jumping, falling }
 
@@ -55,19 +50,6 @@ public class charakter : MonoBehaviour
 
     void Update()
     {
-        if(joystick.Horizontal > .2f)
-        {
-            dirX = 1;
-        } else if(joystick.Horizontal < -.2f)
-        {
-            dirX = -1;
-        } else { dirX = 0; }
-        if(joystick.Vertical > .4f && isGrounded())
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            time = Time.time;
-        }
-
         if (isMovable)
         {
             moveHorizontal();
@@ -75,17 +57,31 @@ public class charakter : MonoBehaviour
         UpdateAnimationState();
         //Jump();
         moveCamera();
-        if(!isGrounded())
-        {
-            New = rb.position.y;
-            float deltaTime = Time.time - time;
-            old = New;
-
-        }
     }
-    public void changeDirX(InputAction.CallbackContext context)
+    
+    public void LeftPointerDown()
     {
-        dirX = context.ReadValue<Vector2>().x;
+        dirX = -1;
+    }
+    public void LeftPointerUp()
+    {
+        dirX = 0;
+    }
+    public void RightPointerDown()
+    {
+        dirX = 1;
+    }
+    public void RightPointerUp()
+    {
+        dirX = 0;
+    }
+
+    public void jump()
+    {
+        if (isGrounded())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
     }
     public void moveHorizontal()
     {
@@ -122,15 +118,17 @@ public class charakter : MonoBehaviour
         animator.SetInteger("state", (int)state);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public void jumpKeyboard(InputAction.CallbackContext context)
     {
-        //if (Input.GetButtonDown("Jump") && isGrounded())
-        if (isGrounded() && context.started)
+        if (context.started)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            time = Time.time;
-            
+            jump();
         }
+    }
+
+    public void moveKeyboard(InputAction.CallbackContext context) //irgendwie einheitlich? -> ohne Trennung Keyboard / Touch
+    {
+        dirX = context.ReadValue<Vector2>().x;
     }
     private void moveCamera()
     {
