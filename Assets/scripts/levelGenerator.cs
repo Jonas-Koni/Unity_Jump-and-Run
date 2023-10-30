@@ -18,33 +18,39 @@ public class levelGenerator : MonoBehaviour
 
     private void Start()
     {
-        character = GameObject.Find("Character");
-        rb = character.GetComponent<Rigidbody2D>();
-        cs = character.GetComponent<charakter>();
+        
 
         GoLevels = new GameObject[6];
 
         GenerateFirstLevel(); //level1
-
-        for (int i = 1; i < GoLevels.Length; i++) //level 2-7
-        {
-            GenerateLevel(i, i);
-        }
-        displayPlatform();
+        GenerateStartLevels();
 
     }
 
     private void Awake()
     {
-        
+        character = GameObject.Find("Character");
+        rb = character.GetComponent<Rigidbody2D>();
+        cs = character.GetComponent<charakter>();
     }
 
     private void Update()
     {
         checkLevel(rb.transform.position.x);
+    }
+
+    private void FixedUpdate()
+    {
         updatePlatform();
+    }
 
-
+    public void GenerateStartLevels() //level 2-7
+    {
+        for (int i = 1; i < GoLevels.Length; i++) //level 2-7
+        {
+            GenerateLevel(i, i);
+        }
+        displayPlatform();
     }
 
     public void GenerateFirstLevel()
@@ -78,9 +84,9 @@ public class levelGenerator : MonoBehaviour
 
                 newLevel.speedCharacter = cs.moveSpeed;
                 newSpeed = GoLevels[positionInLevels - 1].GetComponent<Level>().speedCharacter * 1.05f;
-                if(newSpeed >= 40)
+                if(newSpeed >= 20)
                 {
-                    newSpeed = 40;
+                    newSpeed = 20;
                 }
                 if(levelId < 6)
                 {
@@ -102,9 +108,9 @@ public class levelGenerator : MonoBehaviour
 
                 newLevel.speedCharacter = cs.moveSpeed;
                 newSpeed = GoLevels[positionInLevels - 1].GetComponent<Level>().speedCharacter * 1.05f;
-                if (newSpeed >= 40)
+                if (newSpeed >= 20)
                 {
-                    newSpeed = 40;
+                    newSpeed = 20;
                 }
                 if (levelId < 6)
                 {
@@ -148,9 +154,6 @@ public class levelGenerator : MonoBehaviour
             displayPlatform();
         }
         cs.moveSpeed = GoLevels[GoLevels.Length - 2].GetComponent<Level>().speedCharacter;
-
-
-
     }
 
     public int getLevelState (int level)
@@ -160,23 +163,13 @@ public class levelGenerator : MonoBehaviour
             return (int) levelState.plains;
         }
         //return (int)levelState.maths;
-        //                jumpX = Mathf.PerlinNoise((seed * platforms[i - 1].x) * 0.24643f, 1) * AmplitudeNoise + marginRight;
-        //return 0;
-        //int randomNmb = (int)(2f * Mathf.PerlinNoise((seed * level * 1.23f), 1)); //random?
-        //UnityEngine.Debug.Log(randomNmb);
-        //return randomNmb;
-
-        //return (int) (2f*Mathf.PerlinNoise((seed * level * 0.23f), 1));
-        //UnityEngine.Debug.Log((int)(2f * Mathf.PerlinNoise((seed * level * 0.23f), 1)));
         System.Random random = new System.Random(seed*level);
         int randomNmb = (int)random.Next(0, 2);
-        UnityEngine.Debug.Log(randomNmb);
         return randomNmb;
     }
 
     public void displayPlatform()
     {
-
         float posX = rb.transform.position.x;
         for (int i = 0; i < GoLevels.Length; i ++) // !ArrayIndexOutOfBoundary
         {
@@ -198,5 +191,20 @@ public class levelGenerator : MonoBehaviour
             }
             GoLevels[i].GetComponent<Level>().updateSection();
         }
+    }
+    public void deadPlayer ()
+    {
+        
+        for (int i = 1; i < GoLevels.Length; i++)
+        {
+            Destroy(GoLevels[i].GetComponent<Level>().gameObject);
+        }
+        GenerateStartLevels();
+        GameObject[] GoGrass = GameObject.FindGameObjectsWithTag("grass");
+        for (int g = 0; g < GoGrass.Length; g++)
+        {
+            Destroy(GoGrass[g]);
+        }
+        displayPlatform();
     }
 }

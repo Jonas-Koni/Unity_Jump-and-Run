@@ -32,7 +32,6 @@ public class charakter : MonoBehaviour
 
     private enum MovementState { idle, running, jumping, falling }
 
-    // Start is called before the first frame update
     void Start()
     {
 
@@ -135,6 +134,11 @@ public class charakter : MonoBehaviour
     {
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
         CameraReflection.transform.position = new Vector3(transform.position.x, CameraReflection.transform.position.y, CameraReflection.transform.position.z);
+    }
+
+    private void setToPosition() { 
+        rb.velocity = Vector3.zero;
+        transform.position = new Vector3(-5f, -2f, 0);
     }
 
     private bool isGrounded()

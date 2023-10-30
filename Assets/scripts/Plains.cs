@@ -29,7 +29,7 @@ public class Plains : Level
     public override void generateSection(int seed)
     {
         Vector2 Range = new Vector2(0.5f, 2.0f);
-        platforms = new Vector3[4];
+        platforms = new Vector3[2];
         platforms[0] = new Vector3(PosStart.x, PosStart.y, 10);
 
         for (int i = 1; i < platforms.Length - 1; i++)
