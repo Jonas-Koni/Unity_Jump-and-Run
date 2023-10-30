@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ public class Plains : Level
     }
 
     public override void displayLevel(GameObject[] levels, int positionInLevels, Transform grass)
-    {
+    {        
         Vector3[] PositionList = ((Plains)(levels[positionInLevels]).GetComponent<Level>()).platforms;
 
         for (int i = 0; i < PositionList.Length; i++)
@@ -28,7 +29,7 @@ public class Plains : Level
     public override void generateSection(int seed)
     {
         Vector2 Range = new Vector2(0.5f, 2.0f);
-        platforms = new Vector3[9];
+        platforms = new Vector3[4];
         platforms[0] = new Vector3(PosStart.x, PosStart.y, 10);
 
         for (int i = 1; i < platforms.Length - 1; i++)
@@ -49,7 +50,7 @@ public class Plains : Level
             do
             {
                 jumpX = Mathf.PerlinNoise((seed * platforms[i - 1].x) * 0.24643f, 1) * AmplitudeNoise + marginRight;
-                jumpY = -rb.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / cs.moveSpeed, 2) + cs.jumpForce * jumpX / cs.moveSpeed - 0.6f;
+                jumpY = -rb.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / speedCharacter, 2) + cs.jumpForce * jumpX / speedCharacter - 0.6f;
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
                 newPosY = platforms[i - 1].y + jumpY;
@@ -73,6 +74,8 @@ public class Plains : Level
                 }
 
             } while (!PerfectPosition);
+
+            newPosX--;
 
             PlatformLength = (int)(Mathf.PerlinNoise(seed * i * 0.017434f, seed * i * 0.137434f) * 10 + 1);
             platforms[i] = new Vector3(newPosX, newPosY, PlatformLength);

@@ -7,6 +7,7 @@ public class Level : MonoBehaviour
 {
 
     public int levelId { get; set; }
+    public float speedCharacter { get; set; }
     public Rigidbody2D rb { get; set; }
     public charakter cs { get; set; }
     public Vector2 PosStart { get; set; }
@@ -16,8 +17,6 @@ public class Level : MonoBehaviour
 
     public virtual void displayLevel(GameObject[] levels, int level, Transform grass) { }
 
-    public virtual void generateSection(int seed)
-    {
-
-    }
+    public virtual void generateSection(int seed) { }
+    public virtual void updateSection() {  }
 }

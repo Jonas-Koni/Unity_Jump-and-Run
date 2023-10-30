@@ -25,7 +25,8 @@ public class charakter : MonoBehaviour
 
     private float dirX;
     [SerializeField] public float jumpForce;
-    [SerializeField] public float moveSpeed;
+    //[SerializeField] public float moveSpeed;
+    public float moveSpeed;
 
     [SerializeField] private LayerMask jumpableGround;
 
@@ -43,7 +44,7 @@ public class charakter : MonoBehaviour
 
         isMovable = true;
 
-        moveSpeed = 7f;
+        moveSpeed = 8f;
         jumpForce = 14f;
 
     }
