@@ -1,81 +1,77 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Maths : Level
 {
-    [SerializeField] private Line linePrefab;
+    public static float Time;
+    public static float Scale;
+    public static float Amplitude;
 
-    EdgeCollider2D edgeCollider;
-    LineRenderer lineRenderer;
-
-    float time;
-    int numberOfPoints;
-    float scale;
-    float frequency;
-    float wavelength;
-    float amplitude;
+    private int _numberWaves;
+    private GameObject[] _wavesObject;
 
     private void Awake()
     {
-        edgeCollider = gameObject.GetComponent<EdgeCollider2D>();
+        Scale = .5f;
+        Amplitude = 2f;
+
+        _numberWaves = 2;
     }
 
-    public override void displayLevel(GameObject[] levels, int positionInLevels, Transform grass)
+    public override void GenerateSection(int seed)
     {
-        lineRenderer.numCornerVertices = 3;
-        lineRenderer.numCapVertices = 3;
-        lineRenderer.widthMultiplier = 1f;
-        
-        for (int i = 0; i < numberOfPoints; i++)
-        {
-            float x = i * scale;
-            float y = Mathf.Sin(2*Mathf.PI * (time*frequency - x/wavelength)) * amplitude-2f;
+        _wavesObject = new GameObject[_numberWaves];
 
-            lineRenderer.SetPosition(i, new Vector3(x + PosStart.x, y, 0f));
+        Wave firstWaveScript;
+        GameObject firstWaveObject = new GameObject("Wave");
+        firstWaveObject.layer = LayerMask.NameToLayer("ground");
+
+        firstWaveScript = firstWaveObject.AddComponent<Wave>();
+        firstWaveScript.WaveId = 0;
+        firstWaveScript.WaveStart = PosStart;
+        firstWaveScript.GenerateSectionWave(seed);
+        _wavesObject[0] = firstWaveObject;
+
+        for (int id = 1; id < _wavesObject.Length; id++)
+        { 
+            Wave newWaveScript;
+            GameObject newWaveObject;
+
+            newWaveObject = new GameObject("Wave");
+            newWaveObject.layer = LayerMask.NameToLayer("ground");
+            newWaveScript = newWaveObject.AddComponent<Wave>();
+            newWaveScript.WaveId = id;
+
+            newWaveScript.WaveStart = new Vector2(_wavesObject[id - 1].GetComponent<Wave>().WaveEnd.x + 1f, 1f);
+            newWaveScript.GenerateSectionWave(seed);
+
+            _wavesObject[id] = newWaveObject;
+        }
+        PosEnd = _wavesObject[_wavesObject.Length - 1].GetComponent<Wave>().WaveEnd;
+    }
+
+    public override void DisplayLevel(GameObject[] levels, int level, Transform grass)
+    {
+        for (int id = 0; id < _wavesObject.Length; id++)
+        {
+            _wavesObject[id].GetComponent<Wave>().DisplayWave();
         }
     }
 
-    public override void generateSection(int seed)
+    public override void UpdateSection()
     {
-        time = 0f;
-        scale = .5f;
-        amplitude = 2f;
-
-        numberOfPoints = (int)(50f * Mathf.PerlinNoise(PosStart.x * 0.67f, 1f) + 10f);
-        frequency = 1.6f * Mathf.PerlinNoise(PosStart.x * 0.67f, 1f) + 0.4f;
-        wavelength = 20f * Mathf.PerlinNoise(PosStart.x * 0.37f, 1f) + 10f;
-
-        lineRenderer = gameObject.AddComponent<LineRenderer>();
-        edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
-
-        PosEnd = new Vector2(PosStart.x + numberOfPoints*scale + 1f + speedCharacter/4f, 1f);
-
-        lineRenderer.positionCount = numberOfPoints;        
-    }
-
-    void SetEdgeCollider(LineRenderer lineRenderer) 
-    {
-        List<Vector2> edges = new List<Vector2>();
-
-        for (int point = 0; point < lineRenderer.positionCount; point++)
+        for (int id = 0; id < _wavesObject.Length; id++)
         {
-            Vector3 lineRendererPoint = lineRenderer.GetPosition(point);
-            edges.Add(new Vector2(lineRendererPoint.x, lineRendererPoint.y));
+            _wavesObject[id].GetComponent<Wave>().updateSectionWave();
         }
-        edgeCollider.edgeRadius = 0.4f;
-        edgeCollider.SetPoints(edges);
+        Time += 0.01f;
     }
 
-    public override void updateSection()
+    public override void DestroyContent()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        time += 0.01f;
-        SetEdgeCollider(lineRenderer);
-        displayLevel(null, -1, null);
-    }
+        for (int id = 0; id < _wavesObject.Length; id++)
+        {
+            Destroy(_wavesObject[id]);
+        }
 
+    }
 }

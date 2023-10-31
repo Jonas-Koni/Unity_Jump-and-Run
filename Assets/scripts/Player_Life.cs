@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class Player_Life : MonoBehaviour
 {
-    private Animator animator;
-    private new Rigidbody2D rigidbody;
+    private Animator _animator;
+    private Rigidbody2D _rigidbody;
 
-    private GameObject character;
-    private GameObject levelGenerator;
+    private GameObject _character;
+    private GameObject _levelGenerator;
     
     private void Start()
     {
-        animator = GetComponent<Animator>();
-        rigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Awake()
     {
-        character = GameObject.Find("Character");
-        levelGenerator = GameObject.Find("LevelGenerator");
+        _character = GameObject.Find("Character");
+        _levelGenerator = GameObject.Find("LevelGenerator");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -31,20 +31,19 @@ public class Player_Life : MonoBehaviour
         }
     }
 
-
     private void Die()
     {
-        character.transform.position = new Vector3(-5f, -2f, 0);
+        _character.transform.position = new Vector3(-5f, -2f, 0);
 
-        levelGenerator.GetComponent<levelGenerator>().deadPlayer();
+        _levelGenerator.GetComponent<LevelGenerator>().DeadPlayer();
         //animator.SetTrigger("death");
     }
     private void Swim() //später auslagern
     {
-        charakter.isMovable = false;
-        animator.SetInteger("state", 0);
-        rigidbody.gravityScale = 0;
-        rigidbody.velocity = Vector3.zero;
+        Character.IsMovable = false;
+        _animator.SetInteger("state", 0);
+        _rigidbody.gravityScale = 0;
+        _rigidbody.velocity = Vector3.zero;
         
     }
 }

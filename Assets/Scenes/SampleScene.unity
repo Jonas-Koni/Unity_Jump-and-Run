@@ -98068,9 +98068,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 576e58b983ebbf041aeb38d90579ec0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  joystick: {fileID: 0}
-  jumpForce: 14
-  moveSpeed: 7
+  Joystick: {fileID: 0}
+  MoveSpeed: 7
+  JumpForce: 14
   jumpableGround:
     serializedVersion: 2
     m_Bits: 64
@@ -98148,8 +98148,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1114740315}
-        m_TargetAssemblyTypeName: charakter, Assembly-CSharp
-        m_MethodName: jumpKeyboard
+        m_TargetAssemblyTypeName: Character, Assembly-CSharp
+        m_MethodName: JumpKeyboard
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -98164,8 +98164,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1114740315}
-        m_TargetAssemblyTypeName: charakter, Assembly-CSharp
-        m_MethodName: moveKeyboard
+        m_TargetAssemblyTypeName: Character, Assembly-CSharp
+        m_MethodName: MoveKeyboard
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

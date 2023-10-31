@@ -1,19 +1,10 @@
-using JetBrains.Annotations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Plains : Level
 {
     public Vector3[] platforms { get; set; }
-    public Plains(int levelId)
-    {
-        this.levelId = levelId;
-    }
-
-    public override void displayLevel(GameObject[] levels, int positionInLevels, Transform grass)
+    
+    public override void DisplayLevel(GameObject[] levels, int positionInLevels, Transform grass)
     {        
         Vector3[] PositionList = ((Plains)(levels[positionInLevels]).GetComponent<Level>()).platforms;
 
@@ -26,7 +17,8 @@ public class Plains : Level
         }
     }
 
-    public override void generateSection(int seed)
+
+    public override void GenerateSection(int seed)
     {
         Vector2 Range = new Vector2(0.5f, 2.0f);
         platforms = new Vector3[2];
@@ -34,51 +26,51 @@ public class Plains : Level
 
         for (int i = 1; i < platforms.Length - 1; i++)
         {
-            Boolean PerfectPosition = false;
+            bool perfectPosition = false;
 
-            float AmplitudeNoise = 5.0f;
+            float amplitudeNoise = 5.0f;
             float marginRight = 4.0f;
 
-            int PlatformLength = -1;
+            int platformLength;
 
-            float jumpX = -1f;
-            float jumpY = -1f;
+            float jumpX;
+            float jumpY;
 
             float newPosX;
             float newPosY;
 
             do
             {
-                jumpX = Mathf.PerlinNoise((seed * platforms[i - 1].x) * 0.24643f, 1) * AmplitudeNoise + marginRight;
-                jumpY = -rb.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / speedCharacter, 2) + cs.jumpForce * jumpX / speedCharacter - 0.6f;
+                jumpX = Mathf.PerlinNoise((seed * platforms[i - 1].x) * 0.24643f, 1) * amplitudeNoise + marginRight;
+                jumpY = -Rigidbody.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + CharacterScript.JumpForce * jumpX / SpeedCharacter - 0.6f;
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
                 newPosY = platforms[i - 1].y + jumpY;
 
-                Boolean heightToLow = newPosY < Range.x;
-                Boolean heightToHigh = newPosY > Range.y;
+                bool heightToLow = newPosY < Range.x;
+                bool heightToHigh = newPosY > Range.y;
 
                 if (heightToLow)
                 {
-                    AmplitudeNoise *= 0.85f;
+                    amplitudeNoise *= 0.85f;
                     marginRight *= 0.85f;
                 }
                 if (heightToHigh)
                 {
-                    AmplitudeNoise *= 1.15f;
+                    amplitudeNoise *= 1.15f;
                     marginRight *= 1.15f;
                 }
                 if ((!heightToLow && !heightToHigh))
                 {
-                    PerfectPosition = true;
+                    perfectPosition = true;
                 }
 
-            } while (!PerfectPosition);
+            } while (!perfectPosition);
 
             newPosX--;
 
-            PlatformLength = (int)(Mathf.PerlinNoise(seed * i * 0.017434f, seed * i * 0.137434f) * 10 + 1);
-            platforms[i] = new Vector3(newPosX, newPosY, PlatformLength);
+            platformLength = (int)(Mathf.PerlinNoise(seed * i * 0.017434f, seed * i * 0.137434f) * 10 + 1);
+            platforms[i] = new Vector3(newPosX, newPosY, platformLength);
         }
         float lastPosX = platforms[platforms.Length - 2].x + platforms[platforms.Length - 2].z * 1.7f + 3f;
         float lastPosY = 0f;
