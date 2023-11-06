@@ -367,7 +367,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1914698063
-  m_SortingLayer: 2
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -1714,7 +1714,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 539211597
-  m_SortingLayer: -1
+  m_SortingLayer: -2
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -97451,7 +97451,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14e57bb5a4bf43d43acc044a6c0069fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grass: {fileID: 4073548698186068262, guid: db359d8881a64fd43a7106b31276bb97, type: 3}
+  Grass: {fileID: 4073548698186068262, guid: db359d8881a64fd43a7106b31276bb97, type: 3}
+  MaterialFriction: {fileID: 6200000, guid: c5c40f5a9191ccd4b8b5adeead86aacb, type: 2}
+  MaterialLine: {fileID: 2100000, guid: e30af1a8a9c3c48478d6a31ec914df63, type: 2}
 --- !u!4 &766325025
 Transform:
   m_ObjectHideFlags: 0
@@ -98068,6 +98070,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 576e58b983ebbf041aeb38d90579ec0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  JumpPressedRemember: 0
+  NotGroundedRemember: 0
   Joystick: {fileID: 0}
   MoveSpeed: 7
   JumpForce: 14
@@ -98192,6 +98196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1117015194}
   - component: {fileID: 1117015193}
+  - component: {fileID: 1117015195}
   m_Layer: 0
   m_Name: capybara
   m_TagString: Untagged
@@ -98266,6 +98271,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1117015195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117015192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a4bd4274d2fe94d855f747bb474abe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1173189105
 GameObject:
   m_ObjectHideFlags: 0
@@ -98419,8 +98436,8 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1114740315}
-          m_TargetAssemblyTypeName: charakter, Assembly-CSharp
-          m_MethodName: jump
+          m_TargetAssemblyTypeName: Character, Assembly-CSharp
+          m_MethodName: Jump
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -1,57 +1,86 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Wave : Maths
 {
+    private GameObject _levelGenerator;
+    private LevelGenerator _levelGeneratorScript;
+
     private EdgeCollider2D _edgeCollider;
-    private LineRenderer _lineRenderer;
+    private LineRenderer _lineRenderer; 
+
+    private Material _materialLine;
+    private PhysicsMaterial2D _materialFriction;
+
+    public GameObject _wave;
 
     public int WaveId;
 
     public Vector2 WaveStart;
     public Vector2 WaveEnd;
 
-    private int _numberOfPoints;
+    private static int _numberOfPoints;
     private float _frequency;
     private float _wavelength;
 
-    private void Awake()
+    private void Start()
     {
-        _edgeCollider = gameObject.GetComponent<EdgeCollider2D>();
+        _levelGenerator = GameObject.Find("LevelGenerator");
+        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
+
+        _materialLine = _levelGeneratorScript.MaterialLine;
+        _materialFriction = _levelGeneratorScript.MaterialFriction;
     }
 
     public void DisplayWave()
     {
+        int seed = LevelGenerator._seed;
+
+        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x * seed * 0.67f, 1f) + 10f);
+
         for (int pointIndex = 0; pointIndex < _numberOfPoints; pointIndex++)
         {
             float x = pointIndex * Scale;
-            float y = Mathf.Sin(2*Mathf.PI * (Time*_frequency - x/_wavelength)) * Amplitude-2f;
+            float y = Mathf.Sin(2*Mathf.PI * (LevelGenerator.Time*_frequency - x/_wavelength)) * Amplitude-2f;
 
             _lineRenderer.SetPosition(pointIndex, new Vector3(x + WaveStart.x, y, 0f));
         }
+        //Debug.Log(WaveStart + " " + Time);
     }
 
-    public void GenerateSectionWave(int seed)
+    public void GenerateSectionWave()
     {
+        int seed = LevelGenerator._seed;
         _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x * seed * 0.67f, 1f) + 10f);
-        _frequency = 0.6f * Mathf.PerlinNoise(WaveStart.x * seed * 0.57f, 1f) + 0.2f;
-        _wavelength = 20f * Mathf.PerlinNoise(WaveStart.x * seed * 0.35f, 1f) + 10f;
+        WaveEnd = new Vector2(WaveStart.x + _numberOfPoints * Scale + 3f + SpeedCharacter / 4f, 1f);
 
-        _lineRenderer = gameObject.AddComponent<LineRenderer>();
         _edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
-
-        WaveEnd = new Vector2(WaveStart.x + _numberOfPoints*Scale + 1f + SpeedCharacter/4f, 1f);
-
+        _lineRenderer = gameObject.AddComponent<LineRenderer>();
         _lineRenderer.positionCount = _numberOfPoints;
         _lineRenderer.numCornerVertices = 3;
         _lineRenderer.numCapVertices = 3;
         _lineRenderer.widthMultiplier = 1f;
+
+        _frequency = 0.002f * Mathf.PerlinNoise(WaveStart.x * seed * 0.57f, 1f) + 0.0004f;
+        _wavelength = 15f * Mathf.PerlinNoise(WaveStart.x * seed * 0.35f, 1f) + 8f;
+
+    }
+
+    public void RefreshDataWave()
+    {
+        //Debug.Log(PosStart + " " + WaveStart);
+
+        int seed = LevelGenerator._seed;
+        //_frequency = 2f * Mathf.PerlinNoise(WaveStart.x * seed * 0.57f, 1f) + 0.4f;
+        //_wavelength = 15f * Mathf.PerlinNoise(WaveStart.x * seed * 0.35f, 1f) + 8f;
+
     }
 
     void SetEdgeCollider(LineRenderer lineRenderer) 
     {
         List<Vector2> edges = new();
-
         for (int pointIndex = 0; pointIndex < lineRenderer.positionCount; pointIndex++)
         {
             Vector3 lineRendererPoint = lineRenderer.GetPosition(pointIndex);
@@ -59,11 +88,13 @@ public class Wave : Maths
         }
         _edgeCollider.edgeRadius = 0.4f;
         _edgeCollider.SetPoints(edges);
+
+        _edgeCollider.sharedMaterial = _materialFriction;
+        lineRenderer.sharedMaterial = _materialLine;
     }
 
     public void updateSectionWave()
     {
-        _lineRenderer = GetComponent<LineRenderer>();
         SetEdgeCollider(_lineRenderer);
         DisplayWave();
     }

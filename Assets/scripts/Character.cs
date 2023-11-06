@@ -10,8 +10,12 @@ public class Character : MonoBehaviour
     private Animator _animator;
     private GameObject _cameraReflectionObject;
     private float _dirX;
+    private float _jumpPressedRememberTime;
+    private float _notGroundedRememberTime;
 
 
+    public float JumpPressedRemember;
+    public float NotGroundedRemember;
     public Joystick Joystick;
     public static bool IsMovable;
     public float MoveSpeed;
@@ -29,6 +33,8 @@ public class Character : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _cameraReflectionObject = GameObject.Find("RenderCamera");
+        _jumpPressedRememberTime = 0.15f;
+        _notGroundedRememberTime = 0.05f;
 
         IsMovable = true;
     }
@@ -40,8 +46,25 @@ public class Character : MonoBehaviour
             MoveHorizontal();
         }
         UpdateAnimationState();
-        //Jump();
         MoveCamera();
+
+        if(JumpPressedRemember >= -1) 
+        {
+            JumpPressedRemember -= Time.deltaTime;
+        }
+        NotGroundedRemember -= Time.deltaTime;
+
+
+        if (IsGrounded())
+        {
+            NotGroundedRemember = _notGroundedRememberTime;
+        }
+
+        if (NotGroundedRemember > 0 && JumpPressedRemember > 0)
+        {
+            _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, JumpForce);
+
+        }
     }
 
     public void LeftPointerDown()
@@ -63,10 +86,7 @@ public class Character : MonoBehaviour
 
     public void Jump()
     {
-        if (IsGrounded())
-        {
-            _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, JumpForce);
-        }
+        JumpPressedRemember = _jumpPressedRememberTime;
     }
     public void MoveHorizontal()
     {

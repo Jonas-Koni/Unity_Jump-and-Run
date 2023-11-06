@@ -1,24 +1,38 @@
 using UnityEngine;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private Transform grass;
+    [SerializeField] public Transform Grass;
+    [SerializeField] public PhysicsMaterial2D MaterialFriction;
+    [SerializeField] public Material MaterialLine;
+
+    public static Transform _grassStatic;
 
     enum levelState { plains, maths, german, physics, biology, english, history }
 
-    private int _seed;
+    public static int _seed;
+    public static int Time;
+    private float _maxSpeed;
     private GameObject _characterFigure;
     private Character _characterScript;
     private Rigidbody2D _rigidbody;
-    private GameObject[] _levels; 
+    public static GameObject[] _levels; 
 
     private void Start()
     {
-        _levels = new GameObject[5];
-        _seed = 2;
+        _levels = new GameObject[4];
+        _maxSpeed = 15f;
+        _seed = 24;
+        _grassStatic = Grass;
 
         GenerateFirstLevel(); //level1
         GenerateStartLevels(); //level 2 to lentgh -1
+        for(int i = 0; i < _levels.Length; i++) {
+            //Debug.Log(_levels[i].GetComponent<Level>() + " level: " + GetLevelState(_levels[i].GetComponent<Level>().LevelId));
+
+        }
+
     }
 
     private void Awake()
@@ -31,6 +45,7 @@ public class LevelGenerator : MonoBehaviour
     private void Update()
     {
         CheckLevel(_rigidbody.transform.position.x);
+        Time ++;
     }
 
     private void FixedUpdate()
@@ -49,7 +64,7 @@ public class LevelGenerator : MonoBehaviour
         firstLevelScript.LevelId = 0;
         firstLevelScript.SpeedCharacter = _characterScript.MoveSpeed;
         firstLevelScript.PosStart = new Vector2(-7f, 0f);
-        firstLevelScript.GenerateSection(_seed);
+        firstLevelScript.GenerateSection();
         _levels[0] = firstLevelObject;
 
     }
@@ -92,7 +107,7 @@ public class LevelGenerator : MonoBehaviour
         newLevelScript.LevelId = levelId;
         newLevelScript.SpeedCharacter = CalcSpeedCharacter(positionInLevels, levelId);
         newLevelScript.PosStart = new Vector2(_levels[positionInLevels - 1].GetComponent<Level>().PosEnd.x + 1f, 1f);
-        newLevelScript.GenerateSection(_seed);
+        newLevelScript.GenerateSection();
 
         _levels[positionInLevels] = newLevelObject;
     }
@@ -106,10 +121,10 @@ public class LevelGenerator : MonoBehaviour
         }
 
         float newSpeed = _levels[positionInLevels - 1].GetComponent<Level>().SpeedCharacter * 1.05f;
-        bool tooFast = newSpeed >= 20f;
+        bool tooFast = newSpeed >= _maxSpeed;
         if (tooFast)
         {
-            return 20;
+            return _maxSpeed;
         }
         
         return newSpeed;
@@ -128,6 +143,19 @@ public class LevelGenerator : MonoBehaviour
         DestroyLevels();
         MoveLevels();
         DisplayPlatform();
+        RefreshData();
+        for (int i = 0; i < _levels.Length; i++)
+        {
+            //Debug.Log(_levels[i].GetComponent<Level>() + " level: " + GetLevelState(_levels[i].GetComponent<Level>().LevelId));
+
+        }
+    }
+    public void RefreshData()
+    {
+        for (int levelIndex = 0; levelIndex < _levels.Length; levelIndex++)
+        {
+            _levels[levelIndex].GetComponent<Level>().RefreshData();
+        }
     }
 
     public void DestroyLevels()
@@ -166,7 +194,7 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = 0; i < _levels.Length; i++)
         {
-            _levels[i].GetComponent<Level>().DisplayLevel(_levels, i, grass);
+            _levels[i].GetComponent<Level>().DisplayLevel(i);
         }
     }
     public void UpdatePlatform()

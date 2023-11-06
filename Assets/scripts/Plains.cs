@@ -2,26 +2,44 @@ using UnityEngine;
 
 public class Plains : Level
 {
+    public static int _platfromSize;
     public Vector3[] platforms { get; set; }
-    
-    public override void DisplayLevel(GameObject[] levels, int positionInLevels, Transform grass)
-    {        
-        Vector3[] PositionList = ((Plains)(levels[positionInLevels]).GetComponent<Level>()).platforms;
+    private GameObject _levelGenerator;
+    private LevelGenerator _levelGeneratorScript;
+    private int _seed;
+    private Transform _grass;
+    private GameObject[] _levels;
+
+    private void Start()
+    {
+        _platfromSize = 4; //does not work
+        _levelGenerator = GameObject.Find("LevelGenerator");
+        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
+        //_seed = _levelGeneratorScript._seed;
+        _grass = _levelGeneratorScript.Grass;
+        _levels = LevelGenerator._levels;
+    }
+
+    public override void DisplayLevel(int positionInLevels)
+    {
+        Vector3[] PositionList = ((Plains)(LevelGenerator._levels[positionInLevels]).GetComponent<Level>()).platforms;
 
         for (int i = 0; i < PositionList.Length; i++)
         {
             for (int l = 0; l < PositionList[i].z; l++)
             {
-                Instantiate(grass.gameObject, new Vector2(PositionList[i].x + 1.7f * l, -4.2f + PositionList[i].y), Quaternion.identity);
+                Instantiate(LevelGenerator._grassStatic, new Vector2(PositionList[i].x + 1.7f * l, -4.2f + PositionList[i].y), Quaternion.identity);
             } 
         }
     }
 
 
-    public override void GenerateSection(int seed)
+    public override void GenerateSection()
     {
+
+
         Vector2 Range = new Vector2(0.5f, 2.0f);
-        platforms = new Vector3[2];
+        platforms = new Vector3[4];
         platforms[0] = new Vector3(PosStart.x, PosStart.y, 10);
 
         for (int i = 1; i < platforms.Length - 1; i++)
@@ -41,7 +59,7 @@ public class Plains : Level
 
             do
             {
-                jumpX = Mathf.PerlinNoise((seed * platforms[i - 1].x) * 0.24643f, 1) * amplitudeNoise + marginRight;
+                jumpX = Mathf.PerlinNoise((_seed * platforms[i - 1].x) * 0.24643f, 1) * amplitudeNoise + marginRight;
                 jumpY = -Rigidbody.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + CharacterScript.JumpForce * jumpX / SpeedCharacter - 0.6f;
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
@@ -69,7 +87,7 @@ public class Plains : Level
 
             newPosX--;
 
-            platformLength = (int)(Mathf.PerlinNoise(seed * i * 0.017434f, seed * i * 0.137434f) * 10 + 1);
+            platformLength = (int)(Mathf.PerlinNoise(_seed * i * 0.017434f, _seed * i * 0.137434f) * 10 + 1);
             platforms[i] = new Vector3(newPosX, newPosY, platformLength);
         }
         float lastPosX = platforms[platforms.Length - 2].x + platforms[platforms.Length - 2].z * 1.7f + 3f;

@@ -10,9 +10,9 @@ public class Level : MonoBehaviour
     public Vector2 PosStart { get; set; }
     public Vector2 PosEnd { get; set; }
 
-
-    public virtual void DisplayLevel(GameObject[] levels, int level, Transform grass) { }
-    public virtual void GenerateSection(int seed) { }
-    public virtual void UpdateSection() {  }
-    public virtual void DestroyContent() { }
+    public virtual void GenerateSection() { } //LevelGenerator Start; CheckLevel
+    public virtual void DisplayLevel(int level) { } //GameObject Levels //Player Dead; StartLevels; CheckLevel
+    public virtual void UpdateSection() {  } //Fixed Update
+    public virtual void RefreshData() { } //CheckLevel
+    public virtual void DestroyContent() { } //CheckLevel; Dead Player
 }
