@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player_Life : MonoBehaviour
@@ -9,7 +7,7 @@ public class Player_Life : MonoBehaviour
 
     private GameObject _character;
     private GameObject _levelGenerator;
-    
+
     private void Start()
     {
         _animator = GetComponent<Animator>();
@@ -46,6 +44,6 @@ public class Player_Life : MonoBehaviour
         _animator.SetInteger("state", 0);
         _rigidbody.gravityScale = 0;
         _rigidbody.velocity = Vector3.zero;
-        
+
     }
 }

@@ -41,6 +41,7 @@ public class Character : MonoBehaviour
 
     void Update()
     {
+
         if (IsMovable)
         {
             MoveHorizontal();
@@ -64,6 +65,21 @@ public class Character : MonoBehaviour
         {
             _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, JumpForce);
 
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "book")
+        {
+            transform.parent = collision.transform;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "book")
+        {
+            transform.parent = null;
         }
     }
 
@@ -95,6 +111,7 @@ public class Character : MonoBehaviour
 
     private void UpdateAnimationState()
     {
+
         MovementState state;
         if (_dirX > 0f)
         {
@@ -115,7 +132,7 @@ public class Character : MonoBehaviour
         {
             state = MovementState.jumping;
         }
-        else if (_rigidBody.velocity.y < -.1f)
+        else if (_rigidBody.velocity.y < -0.2f && NotGroundedRemember < 0)
         {
             state = MovementState.falling;
         }

@@ -29,7 +29,7 @@ public class Maths : Level
         firstWaveScript = firstWaveObject.AddComponent<Wave>();
         firstWaveScript.WaveId = 0;
         firstWaveScript.WaveStart = PosStart;
-        firstWaveScript._wave = firstWaveObject;
+        //firstWaveScript._wave = firstWaveObject;
         firstWaveScript.GenerateSectionWave();
         _wavesObject[0] = firstWaveObject;
 
@@ -44,7 +44,7 @@ public class Maths : Level
             newWaveScript.WaveId = id;
 
             newWaveScript.WaveStart = new Vector2(_wavesObject[id - 1].GetComponent<Wave>().WaveEnd.x + 1f, 1f);
-            firstWaveScript._wave = newWaveObject;
+            //firstWaveScript._wave = newWaveObject;
             newWaveScript.GenerateSectionWave();
 
             _wavesObject[id] = newWaveObject;

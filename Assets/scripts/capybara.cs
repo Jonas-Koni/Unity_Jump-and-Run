@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class capybara : MonoBehaviour
@@ -39,18 +37,20 @@ public class capybara : MonoBehaviour
     void Update()
     {
         _capybara.transform.position = new Vector3(_posX, -4.91f, 0);
-        if(diffPos > 4f)
+        if (diffPos > 4f)
         {
             _maxVelocity = 0.17f;
-        } else
+        }
+        else
         {
             _maxVelocity = 0.11f;
         }
 
-        if(_velocity > 0)
+        if (_velocity > 0)
         {
             _capybara.transform.eulerAngles = new Vector3(0, 180, 0);
-        } else
+        }
+        else
         {
             _capybara.transform.eulerAngles = new Vector3(0, 0, 0);
         }

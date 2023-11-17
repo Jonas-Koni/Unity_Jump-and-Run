@@ -6,7 +6,6 @@ public class Plains : Level
     public Vector3[] platforms { get; set; }
     private GameObject _levelGenerator;
     private LevelGenerator _levelGeneratorScript;
-    private int _seed;
     private Transform _grass;
     private GameObject[] _levels;
 
@@ -29,7 +28,7 @@ public class Plains : Level
             for (int l = 0; l < PositionList[i].z; l++)
             {
                 Instantiate(LevelGenerator._grassStatic, new Vector2(PositionList[i].x + 1.7f * l, -4.2f + PositionList[i].y), Quaternion.identity);
-            } 
+            }
         }
     }
 
@@ -59,7 +58,7 @@ public class Plains : Level
 
             do
             {
-                jumpX = Mathf.PerlinNoise((_seed * platforms[i - 1].x) * 0.24643f, 1) * amplitudeNoise + marginRight;
+                jumpX = Mathf.PerlinNoise((LevelGenerator.Seed + platforms[i - 1].x) + 0.24643f, 1) * amplitudeNoise + marginRight;
                 jumpY = -Rigidbody.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + CharacterScript.JumpForce * jumpX / SpeedCharacter - 0.6f;
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
@@ -85,9 +84,7 @@ public class Plains : Level
 
             } while (!perfectPosition);
 
-            newPosX--;
-
-            platformLength = (int)(Mathf.PerlinNoise(_seed * i * 0.017434f, _seed * i * 0.137434f) * 10 + 1);
+            platformLength = (int)(Mathf.PerlinNoise(LevelGenerator.Seed + i + 0.017434f, LevelGenerator.Seed + i + 0.137434f) * 10 + 1);
             platforms[i] = new Vector3(newPosX, newPosY, platformLength);
         }
         float lastPosX = platforms[platforms.Length - 2].x + platforms[platforms.Length - 2].z * 1.7f + 3f;

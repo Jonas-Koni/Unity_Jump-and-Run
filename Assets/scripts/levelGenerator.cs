@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
+
+public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
+
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -11,24 +15,31 @@ public class LevelGenerator : MonoBehaviour
 
     enum levelState { plains, maths, german, physics, biology, english, history }
 
-    public static int _seed;
+    public static int Seed;
     public static int Time;
+
+    public static int CurrentLevel; //test
+
+    public List<Sprite> BookSprites;
+
     private float _maxSpeed;
     private GameObject _characterFigure;
     private Character _characterScript;
     private Rigidbody2D _rigidbody;
-    public static GameObject[] _levels; 
+    public static GameObject[] _levels;
 
     private void Start()
     {
         _levels = new GameObject[4];
         _maxSpeed = 15f;
-        _seed = 24;
+        Seed = UnityEngine.Random.Range(0, 2000);
         _grassStatic = Grass;
+        //public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
 
         GenerateFirstLevel(); //level1
         GenerateStartLevels(); //level 2 to lentgh -1
-        for(int i = 0; i < _levels.Length; i++) {
+        for (int i = 0; i < _levels.Length; i++)
+        {
             //Debug.Log(_levels[i].GetComponent<Level>() + " level: " + GetLevelState(_levels[i].GetComponent<Level>().LevelId));
 
         }
@@ -45,12 +56,12 @@ public class LevelGenerator : MonoBehaviour
     private void Update()
     {
         CheckLevel(_rigidbody.transform.position.x);
-        Time ++;
     }
 
     private void FixedUpdate()
     {
         UpdatePlatform();
+        Time++;
     }
 
     public void GenerateFirstLevel()
@@ -95,6 +106,10 @@ public class LevelGenerator : MonoBehaviour
                 newLevelObject = new GameObject("Maths");
                 newLevelScript = newLevelObject.AddComponent<Maths>();
                 break;
+            case levelState.german:
+                newLevelObject = new GameObject("German");
+                newLevelScript = newLevelObject.AddComponent<German>();
+                break;
             default:
                 return;
                 //case levelState.physics:
@@ -126,7 +141,7 @@ public class LevelGenerator : MonoBehaviour
         {
             return _maxSpeed;
         }
-        
+
         return newSpeed;
     }
 
@@ -139,7 +154,8 @@ public class LevelGenerator : MonoBehaviour
         {
             return;
         }
-
+        _characterFigure.GetComponent<ItemCollector>().Test();
+        CurrentLevel = _levels[_levels.Length - 1].GetComponent<Level>().LevelId;
         DestroyLevels();
         MoveLevels();
         DisplayPlatform();
@@ -184,9 +200,9 @@ public class LevelGenerator : MonoBehaviour
         {
             return levelState.plains;
         }
-        //return levelState.plains;
-        System.Random random = new System.Random(_seed * level);
-        levelState randomNmb = (levelState)(random.Next(0, 2));
+        //return levelState.german;
+        System.Random random = new System.Random(Seed + level);
+        levelState randomNmb = (levelState)(random.Next(0, 3));
         return randomNmb;
     }
 

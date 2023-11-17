@@ -8,6 +8,7 @@ TagManager:
   - water
   - grass
   - wave
+  - book
   layers:
   - Default
   - TransparentFX

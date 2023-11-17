@@ -97454,6 +97454,24 @@ MonoBehaviour:
   Grass: {fileID: 4073548698186068262, guid: db359d8881a64fd43a7106b31276bb97, type: 3}
   MaterialFriction: {fileID: 6200000, guid: c5c40f5a9191ccd4b8b5adeead86aacb, type: 2}
   MaterialLine: {fileID: 2100000, guid: e30af1a8a9c3c48478d6a31ec914df63, type: 2}
+  BookSprites:
+  - {fileID: 21300000, guid: 92e9d84172bf09340bae0431f0b973af, type: 3}
+  - {fileID: 21300000, guid: 5d7a9f97fff4ecd49ae222259ad0d6ac, type: 3}
+  - {fileID: 21300000, guid: 0feb11970c6159341a63483aec704d10, type: 3}
+  - {fileID: 21300000, guid: 87b2a7c80d306d24a913dd88b080e4ff, type: 3}
+  - {fileID: 21300000, guid: f645539017af335488a08c184893a46f, type: 3}
+  - {fileID: 21300000, guid: a64c966f08b8fb8418b31b553935f25d, type: 3}
+  - {fileID: 21300000, guid: ba7143c5ca7c0da469ffc0815cafbbd9, type: 3}
+  - {fileID: 21300000, guid: de47ee1965861b9429ce59a72e9347cb, type: 3}
+  - {fileID: 21300000, guid: 3953e09b2d85ad44ca6fb2b9b7980716, type: 3}
+  - {fileID: 21300000, guid: 1458dde0879737748a8b0c4450982cba, type: 3}
+  - {fileID: 21300000, guid: 0d1a12873347d4c40a66a27111c736a3, type: 3}
+  - {fileID: 21300000, guid: 8b98a99ec2a38a745a5ea77972863d1e, type: 3}
+  - {fileID: 21300000, guid: caddcea9c55b1744da8b03b98209bb0e, type: 3}
+  - {fileID: 21300000, guid: 1cc0383229a960a42b0418b5367ae49a, type: 3}
+  - {fileID: 21300000, guid: 67069699accfd0843923294fa87999d4, type: 3}
+  - {fileID: 21300000, guid: f8148304c7ae3bd4c8e78497c27c01f4, type: 3}
+  - {fileID: 21300000, guid: 6f578b9f0acc5fb4cb998cb1df516baf, type: 3}
 --- !u!4 &766325025
 Transform:
   m_ObjectHideFlags: 0

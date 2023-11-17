@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class ItemCollector : MonoBehaviour
 {
@@ -16,7 +14,12 @@ public class ItemCollector : MonoBehaviour
             melons++;
             Destroy(collision.gameObject);
 
-            melonsText.text = "Melons: " + melons;
+            melonsText.text = "Melons: " + melons + "; level: " + LevelGenerator.CurrentLevel;
         }
+    }
+    public void Test()
+    {
+        melonsText.text = "Melons: " + melons + "; level: " + LevelGenerator.CurrentLevel;
+
     }
 }
