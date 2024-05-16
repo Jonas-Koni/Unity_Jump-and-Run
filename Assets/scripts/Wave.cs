@@ -35,7 +35,7 @@ public class Wave : Maths
     {
         int seed = LevelGenerator.Seed;
 
-        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x * seed * 0.67f, 1f) + 10f);
+        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x + seed + 0.67f, 1f) + 10f); //PerlinNoise ersetzen!
 
         for (int pointIndex = 0; pointIndex < _numberOfPoints; pointIndex++)
         {
@@ -50,7 +50,7 @@ public class Wave : Maths
     public void GenerateSectionWave()
     {
         int seed = LevelGenerator.Seed;
-        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x * seed * 0.67f, 1f) + 10f);
+        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x + seed + 0.67f, 1f) + 10f);
         WaveEnd = new Vector2(WaveStart.x + _numberOfPoints * Scale + 4.5f + SpeedCharacter / 4f, 1f);
 
         _edgeCollider = gameObject.AddComponent<EdgeCollider2D>();

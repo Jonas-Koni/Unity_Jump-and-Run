@@ -12,7 +12,8 @@ public abstract class Book : German
     private PhysicsMaterial2D _materialFriction;
 
     public int BookId;
-
+    public float MarginTopBook;
+    public Texture BookTexture;
 
     public Vector2 BookStart;
     public Vector2 BookEnd;
@@ -34,14 +35,14 @@ public abstract class Book : German
         GenerateSectionBook();
     }
 
-    public void BookMarginTop(int book, BookVertical newScript, GameObject[] stack)
+    public void BookMarginTop(int book, Book newScript, GameObject[] stack)
     {
         if (book == 0)
         {
             newScript.MarginTopBook = 0;
             return;
         }
-        BookVertical oldScript = stack[book - 1].GetComponent<BookVertical>();
+        Book oldScript = stack[book - 1].GetComponent<Book>();
         float marginTop = oldScript.MarginTopBook + oldScript.BookTexture.width * 0.01f / 2 + newScript.BookTexture.width * 0.01f / 2;
         newScript.MarginTopBook = marginTop;
 
@@ -62,7 +63,7 @@ public class BookStart : Book
     private Texture _bookTexture;
 
     private int _randomBookType;
-    private int _amplitude = 2;
+    private float _amplitude;
     private float _frequency;
     public override void UpdateBook()
     {
@@ -73,7 +74,6 @@ public class BookStart : Book
         SpriteRenderer.transform.eulerAngles = new Vector3(0, 0, 90);
 
         Vector3 moveBook = new Vector3(0, _amplitude * Mathf.Sin(LevelGenerator.Time * 0.01f * _frequency), 0);
-        //Debug.Log("Start " +  moveBook);
         SpriteRenderer.transform.position += moveBook;
 
 
@@ -84,6 +84,7 @@ public class BookStart : Book
         float localSeed = LevelGenerator.Seed + BookId + (int)BookStart.x * 3;
         Random.InitState((int)localSeed);
 
+        _amplitude = 2f;
         _randomBookType = (int)(LevelGeneratorScript.BookSprites.Count * Random.value);
         _bookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
         _frequency = Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f;
@@ -105,7 +106,7 @@ public class BookStart : Book
 
 
 #region horizontal
-public class BookHorizontal : Book
+public class BookHorizontalMovement : Book
 {
     private Texture _bookTexture;
 
@@ -136,13 +137,13 @@ public class BookHorizontal : Book
         _frequency = Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f;
 
         float bookEndHeight;
-        if (BookStart.y <= 5f)
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
         {
             bookEndHeight = BookStart.y - Random.value * 2;
         }
         else
         {
-            bookEndHeight = 5f - Random.value * 2;
+            bookEndHeight = Random.value * 3;
         }
 
         BookEnd = new Vector2(BookStart.x + 9f, bookEndHeight);
@@ -153,30 +154,30 @@ public class BookHorizontal : Book
 
 
 #region vertical
-public class BookVerticalStack : Book
+public class BookStackVerticalMovement : Book
 {
+    public GameObject[] Stack;
+    public int Amplitude;
+    public float Frequency;
+    public Vector2 MoveBook;
 
-    public int _amplitude;
-    public float _frequency;
     private int _numberBooks;
-    public GameObject[] _stack;
-    public Vector2 MoveBook { get; private set; }
 
 
     public override void UpdateBook()
     {
-        MoveBook = new Vector2(0, _amplitude * Mathf.Sin(LevelGenerator.Time * 0.01f * _frequency));
-        for (int book = 0; book < _stack.Length; book++)
+        MoveBook = new Vector2(0, Amplitude * Mathf.Sin(LevelGenerator.Time * 0.01f * Frequency));
+        for (int book = 0; book < Stack.Length; book++)
         {
-            _stack[book].GetComponent<BookVertical>().UpdateBookofBookStack();
+            Stack[book].GetComponent<BookVerticalMovement>().UpdateBookofBookStack();
         }
     }
 
     public override void DestroyBooks()
     {
-        for (int book = 0; book < _stack.Length; book++)
+        for (int book = 0; book < Stack.Length; book++)
         {
-            Destroy(_stack[book]);
+            Destroy(Stack[book]);
         }
         Destroy(this.gameObject);
     }
@@ -187,9 +188,9 @@ public class BookVerticalStack : Book
         Random.InitState((int)localSeed);
 
         _numberBooks = (int)(Random.value * 3f + 2f);
-        _stack = new GameObject[_numberBooks];
+        Stack = new GameObject[_numberBooks];
 
-        for (int book = 0; book < _stack.Length; book++)
+        for (int book = 0; book < Stack.Length; book++)
         {
             Book newBookVerticalScript;
             GameObject newBookVerticalObject;
@@ -198,61 +199,57 @@ public class BookVerticalStack : Book
             newBookVerticalObject = new GameObject(book.ToString());
             newBookVerticalObject.layer = LayerMask.NameToLayer("ground");
             newBookVerticalObject.tag = "book";
-            newBookVerticalScript = (Book)newBookVerticalObject.AddComponent<BookVertical>();
+            newBookVerticalScript = (Book)newBookVerticalObject.AddComponent<BookVerticalMovement>();
             newBookVerticalScript.InitBook();
             newBookVerticalScript.BookId = book;
             newBookVerticalScript.BookStart = BookStart;
-            ((BookVertical)newBookVerticalScript).ParentVerticalStack = this.gameObject;
+            ((BookVerticalMovement)newBookVerticalScript).ParentVerticalStack = this.gameObject;
             newBookVerticalScript.BookMarginTop(
                 book,
-                (BookVertical)newBookVerticalScript,
-                _stack);
-            _stack[book] = newBookVerticalObject;
+                (BookVerticalMovement)newBookVerticalScript,
+                Stack);
+            Stack[book] = newBookVerticalObject;
         }
 
-        _frequency = Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f;
-        _amplitude = (int)(Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f);
+        Frequency = Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f;
+        Amplitude = (int)(Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f);
 
         float bookEndHeight;
-        if (BookStart.y <= 5f)
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
         {
             bookEndHeight = BookStart.y - Random.value * 2;
         }
         else
         {
-            bookEndHeight = 5f - Random.value * 2;
+            bookEndHeight = Random.value * 3;
         }
 
-        BookEnd = new Vector2(BookStart.x + 2f, bookEndHeight);
+        BookEnd = new Vector2(BookStart.x + 3f, bookEndHeight);
     }
 
     public void DestroyBookContent()
     {
-        for (int book = 0; book < _stack.Length; book++)
+        for (int book = 0; book < Stack.Length; book++)
         {
-            Destroy(_stack[book]);
+            Destroy(Stack[book]);
         }
 
     }
 }
 
-public class BookVertical : BookVerticalStack
+public class BookVerticalMovement : BookStackVerticalMovement
 {
-    public Texture BookTexture;
-    private int _randomBookType;
-    public float MarginTopBook;
     public GameObject ParentVerticalStack;
+
+    private int _randomBookType;
     public void UpdateBookofBookStack()
     {
-        gameObject.transform.position = new Vector3(BookStart.x, BookStart.y - MarginTopBook + ParentVerticalStack.GetComponent<BookVerticalStack>().MoveBook.y, 0);
+        gameObject.transform.position = new Vector3(BookStart.x, BookStart.y - MarginTopBook + ParentVerticalStack.GetComponent<BookStackVerticalMovement>().MoveBook.y, 0);
         SpriteRenderer.sprite = LevelGeneratorScript.BookSprites[_randomBookType];
         float test = LevelGeneratorScript.BookSprites[0].texture.width;
         BoxCollider.size = new Vector2(BookTexture.width, BookTexture.height);
         BoxCollider.size *= 0.01f;
         SpriteRenderer.transform.eulerAngles = new Vector3(0, 0, 90);
-
-        //Vector3 moveBook = new Vector3(0, _amplitude * Mathf.Sin(LevelGenerator.Time * 0.01f * _frequency), 0);
-        //_spriteRenderer.transform.position += moveBook;
     }
 
 
@@ -261,27 +258,116 @@ public class BookVertical : BookVerticalStack
     {
         _randomBookType = (int)(LevelGeneratorScript.BookSprites.Count * Random.value);
         BookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
-
     }
-
-
 }
 #endregion
 
 
 #region diagonal
-public class BookDiagonal : Book
+public class BookStackDiagonalMovement : Book
 {
-    private Texture _bookTexture;
+    public GameObject[] Stack;
+    public int Amplitude;
+    public float Frequency;
+    public float Slope;
+    public Vector2 MoveBook;
 
-    private int _randomBookType;
+    private int _numberBooks;
+    public float DeltaX;
+    public float DeltaY;
 
 
     public override void UpdateBook()
     {
-        gameObject.transform.position = new Vector3(BookStart.x, BookStart.y, 0);
+        float relativePosition = Mathf.Sin(LevelGenerator.Time * 0.01f * Frequency);
+        MoveBook = new Vector2(DeltaX * relativePosition, DeltaY * relativePosition);
+        for (int book = 0; book < Stack.Length; book++)
+        {
+            Stack[book].GetComponent<BookDiagonalMovement>().UpdateBookofBookStack();
+        }
+    }
+
+    public override void DestroyBooks()
+    {
+        for (int book = 0; book < Stack.Length; book++)
+        {
+            Destroy(Stack[book]);
+        }
+        Destroy(this.gameObject);
+    }
+
+    public override void GenerateSectionBook()
+    {
+        float localSeed = LevelGenerator.Seed + BookId + (int)BookStart.x * 3;
+        Random.InitState((int)localSeed);
+
+        _numberBooks = (int)(Random.value * 3f + 2f);
+        Stack = new GameObject[_numberBooks];
+
+        for (int book = 0; book < Stack.Length; book++)
+        {
+            Book newBookDiagonalMovementScript;
+            GameObject newBookDiagonalMovementObject;
+
+
+            newBookDiagonalMovementObject = new GameObject(book.ToString())
+            {
+                layer = LayerMask.NameToLayer("ground"),
+                tag = "book"
+            };
+            newBookDiagonalMovementScript = (Book)newBookDiagonalMovementObject.AddComponent<BookDiagonalMovement>();
+            newBookDiagonalMovementScript.InitBook();
+            newBookDiagonalMovementScript.BookId = book;
+            newBookDiagonalMovementScript.BookStart = BookStart;
+            ((BookDiagonalMovement)newBookDiagonalMovementScript).ParentVerticalStack = this.gameObject;
+            ((BookDiagonalMovement)newBookDiagonalMovementScript).BookStackScript = this.gameObject.GetComponent<BookStackDiagonalMovement>();
+            newBookDiagonalMovementScript.BookMarginTop(
+                book,
+                newBookDiagonalMovementScript,
+                Stack);
+            Stack[book] = newBookDiagonalMovementObject;
+        }
+
+        Frequency = Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2f + 1f;
+        Amplitude = (int)(Mathf.Abs(Mathf.Sin(Random.value * Mathf.PI)) * 2.5f + 1.5f);
+        Slope = Mathf.Tan(Random.value * 2f * Mathf.PI);
+
+        float bookEndHeight;
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
+        {
+            bookEndHeight = BookStart.y - Random.value * 2;
+        }
+        else
+        {
+            bookEndHeight = Random.value * 3;
+        }
+        DeltaX = Amplitude * Mathf.Pow(Slope * Slope + 1, -0.5f);
+        DeltaY = Slope * DeltaX;
+
+        BookEnd = new Vector2(BookStart.x + 3f + 2*DeltaX, bookEndHeight);
+    }
+
+    public void DestroyBookContent()
+    {
+        for (int book = 0; book < Stack.Length; book++)
+        {
+            Destroy(Stack[book]);
+        }
+
+    }
+}
+
+public class BookDiagonalMovement : BookStackDiagonalMovement
+{
+    public GameObject ParentVerticalStack;
+
+    private int _randomBookType;
+    public BookStackDiagonalMovement BookStackScript;
+    public void UpdateBookofBookStack()
+    {
+        gameObject.transform.position = new Vector3((BookStart.x + BookStackScript.DeltaX) + (BookStackScript.MoveBook.x), (BookStart.y - MarginTopBook) + (BookStackScript.MoveBook.y), 0);
         SpriteRenderer.sprite = LevelGeneratorScript.BookSprites[_randomBookType];
-        BoxCollider.size = new Vector2(_bookTexture.width, _bookTexture.height);
+        BoxCollider.size = new Vector2(BookTexture.width, BookTexture.height);
         BoxCollider.size *= 0.01f;
         SpriteRenderer.transform.eulerAngles = new Vector3(0, 0, 90);
     }
@@ -290,24 +376,8 @@ public class BookDiagonal : Book
 
     public override void GenerateSectionBook()
     {
-        float localSeed = LevelGenerator.Seed + BookId + (int)BookStart.x * 3;
-        Random.InitState((int)localSeed);
-
         _randomBookType = (int)(LevelGeneratorScript.BookSprites.Count * Random.value);
-        _bookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
-
-
-        float bookEndHeight;
-        if (BookStart.y <= 5f)
-        {
-            bookEndHeight = BookStart.y - Random.value * 2;
-        }
-        else
-        {
-            bookEndHeight = 5f - Random.value * 2;
-        }
-
-        BookEnd = new Vector2(BookStart.x + 2f, bookEndHeight);
+        BookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
     }
 
 }
@@ -315,7 +385,7 @@ public class BookDiagonal : Book
 
 
 #region Drop
-public class BookDrop : Book
+public class BookDrop : Book //not implemented -> normal book
 {
     private Texture _bookTexture;
 
@@ -343,13 +413,13 @@ public class BookDrop : Book
 
 
         float bookEndHeight;
-        if (BookStart.y <= 5f)
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
         {
             bookEndHeight = BookStart.y - Random.value * 2;
         }
         else
         {
-            bookEndHeight = 5f - Random.value * 2;
+            bookEndHeight = Random.value * 3;
         }
 
         BookEnd = new Vector2(BookStart.x + 2f, bookEndHeight);
@@ -387,13 +457,13 @@ public class BookOld : Book
         _bookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
 
         float bookEndHeight;
-        if (BookStart.y <= 5f)
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
         {
             bookEndHeight = BookStart.y - Random.value * 2;
         }
         else
         {
-            bookEndHeight = 5f - Random.value * 2;
+            bookEndHeight = Random.value * 3;
         }
 
         BookEnd = new Vector2(BookStart.x + 2f, bookEndHeight);
@@ -431,13 +501,13 @@ public class BookEnd : Book
         _bookTexture = LevelGeneratorScript.BookSprites[_randomBookType].texture;
 
         float bookEndHeight;
-        if (BookStart.y <= 5f)
+        if (BookStart.y <= 5f && BookStart.y >= 1f)
         {
             bookEndHeight = BookStart.y - Random.value * 2;
         }
         else
         {
-            bookEndHeight = 5f - Random.value * 2;
+            bookEndHeight = Random.value * 3;
         }
 
         BookEnd = new Vector2(BookStart.x + 2f, bookEndHeight);

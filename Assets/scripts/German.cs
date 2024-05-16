@@ -10,10 +10,8 @@ public class German : Level
 
     private void Awake()
     {
-        _numberBooks = 6; //Achtung Bücher unter 0
+        _numberBooks = 20;
         _numberBookTypes = 7;
-        //_numberBookTypes = Enum.GetValues(typeof(BookType)).Length;
-
     }
 
     public override void GenerateSection()
@@ -30,6 +28,7 @@ public class German : Level
             newBookObject = new GameObject(GetBookType(id).ToString());
             newBookObject.layer = LayerMask.NameToLayer("ground");
             newBookObject.tag = "book";
+            newBookObject.tag = "sticky";
             newBookScript = (Book)newBookObject.AddComponent(bookType);
             newBookScript.BookId = id;
             if (id == 0)
@@ -93,12 +92,12 @@ public class German : Level
         return randomBookType switch
         {
             0 => typeof(BookStart),
-            1 => typeof(BookHorizontal),
-            2 => typeof(BookVerticalStack),
-            3 => typeof(BookDiagonal),
-            4 => typeof(BookDrop),
-            5 => typeof(BookOld),
-            6 => typeof(BookEnd),
+            1 => typeof(BookHorizontalMovement),
+            2 => typeof(BookStackVerticalMovement),
+            3 => typeof(BookStackDiagonalMovement),
+            4 => typeof(BookDrop), //not implemented -> normal book
+            5 => typeof(BookOld), //not implemented -> normal book
+            6 => typeof(BookEnd), //not implemented -> normal book
             _ => throw new InvalidOperationException()
         };
     }

@@ -9,6 +9,8 @@ TagManager:
   - grass
   - wave
   - book
+  - lineToOrigin
+  - sticky
   layers:
   - Default
   - TransparentFX

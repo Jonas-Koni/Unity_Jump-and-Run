@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
 
@@ -10,6 +11,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] public Transform Grass;
     [SerializeField] public PhysicsMaterial2D MaterialFriction;
     [SerializeField] public Material MaterialLine;
+    [SerializeField] public Sprite SpritePendulum;
 
     public static Transform _grassStatic;
 
@@ -28,11 +30,15 @@ public class LevelGenerator : MonoBehaviour
     private Rigidbody2D _rigidbody;
     public static GameObject[] _levels;
 
+    private System.Random _randomLevel;
+
+
     private void Start()
     {
         _levels = new GameObject[4];
         _maxSpeed = 15f;
         Seed = UnityEngine.Random.Range(0, 2000);
+        _randomLevel = new System.Random(Seed);
         _grassStatic = Grass;
         //public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
 
@@ -110,6 +116,10 @@ public class LevelGenerator : MonoBehaviour
                 newLevelObject = new GameObject("German");
                 newLevelScript = newLevelObject.AddComponent<German>();
                 break;
+            case levelState.physics:
+                newLevelObject = new GameObject("Physic");
+                newLevelScript = newLevelObject.AddComponent<Physic>();
+                break;
             default:
                 return;
                 //case levelState.physics:
@@ -147,8 +157,8 @@ public class LevelGenerator : MonoBehaviour
 
     public void CheckLevel(float posX)
     {
-        bool playerLeftToLevelEnd = posX < _levels[_levels.Length - 2].GetComponent<Level>().PosEnd.x;
-        _characterScript.MoveSpeed = _levels[_levels.Length - 2].GetComponent<Level>().SpeedCharacter;
+        bool playerLeftToLevelEnd = posX < _levels[^2].GetComponent<Level>().PosEnd.x;
+        _characterScript.MoveSpeed = _levels[^2].GetComponent<Level>().SpeedCharacter;
 
         if (playerLeftToLevelEnd)
         {
@@ -160,11 +170,6 @@ public class LevelGenerator : MonoBehaviour
         MoveLevels();
         DisplayPlatform();
         RefreshData();
-        for (int i = 0; i < _levels.Length; i++)
-        {
-            //Debug.Log(_levels[i].GetComponent<Level>() + " level: " + GetLevelState(_levels[i].GetComponent<Level>().LevelId));
-
-        }
     }
     public void RefreshData()
     {
@@ -191,7 +196,7 @@ public class LevelGenerator : MonoBehaviour
         {
             _levels[i] = _levels[i + 1];
         }
-        GenerateLevel(_levels.Length - 1, _levels[_levels.Length - 2].GetComponent<Level>().LevelId + 1);
+        GenerateLevel(_levels.Length - 1, _levels[^2].GetComponent<Level>().LevelId + 1);
     }
 
     private levelState GetLevelState(int level)
@@ -201,8 +206,9 @@ public class LevelGenerator : MonoBehaviour
             return levelState.plains;
         }
         //return levelState.german;
-        System.Random random = new System.Random(Seed + level);
-        levelState randomNmb = (levelState)(random.Next(0, 3));
+        //System.Random random = new System.Random(Seed + level);
+        return levelState.physics;
+        levelState randomNmb = (levelState)(_randomLevel.Next(0, 4));
         return randomNmb;
     }
 
@@ -227,6 +233,8 @@ public class LevelGenerator : MonoBehaviour
             _levels[i].GetComponent<Level>().DestroyContent();
             Destroy(_levels[i].GetComponent<Level>().gameObject);
         }
+        Seed = UnityEngine.Random.Range(0, 2000);
+        _randomLevel = new System.Random(Seed);
         GenerateStartLevels();
         GameObject[] GoGrass = GameObject.FindGameObjectsWithTag("grass");
         for (int g = 0; g < GoGrass.Length; g++)
@@ -234,5 +242,7 @@ public class LevelGenerator : MonoBehaviour
             Destroy(GoGrass[g]);
         }
         DisplayPlatform();
+        //        LevelGenerator.Seed = UnityEngine.Random.Range(0, 2000);
+
     }
 }

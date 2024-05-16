@@ -36,6 +36,7 @@ public class Player_Life : MonoBehaviour
         _character.GetComponent<Character>().NotGroundedRemember = 0;
         _character.GetComponent<Character>().JumpPressedRemember = 0;
         _levelGenerator.GetComponent<LevelGenerator>().DeadPlayer();
+
         //animator.SetTrigger("death");
     }
     private void Swim() //später auslagern

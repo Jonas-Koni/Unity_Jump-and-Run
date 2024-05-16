@@ -49,7 +49,7 @@ public class Maths : Level
 
             _wavesObject[id] = newWaveObject;
         }
-        PosEnd = _wavesObject[_wavesObject.Length - 1].GetComponent<Wave>().WaveEnd;
+        PosEnd = _wavesObject[^1].GetComponent<Wave>().WaveEnd;
     }
 
 

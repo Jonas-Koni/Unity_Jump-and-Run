@@ -21,6 +21,8 @@ public class Character : MonoBehaviour
     public float MoveSpeed;
     public float JumpForce;
 
+    public static float gravityScale;
+
     [SerializeField] private LayerMask jumpableGround;
 
     private enum MovementState { idle, running, jumping, falling }
@@ -35,6 +37,7 @@ public class Character : MonoBehaviour
         _cameraReflectionObject = GameObject.Find("RenderCamera");
         _jumpPressedRememberTime = 0.15f;
         _notGroundedRememberTime = 0.05f;
+        gravityScale = _rigidBody.gravityScale * 9.81f;
 
         IsMovable = true;
     }
@@ -70,14 +73,14 @@ public class Character : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "book")
+        if (collision.gameObject.tag == "sticky")
         {
             transform.parent = collision.transform;
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "book")
+        if (collision.gameObject.tag == "sticky")
         {
             transform.parent = null;
         }
