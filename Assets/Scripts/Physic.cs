@@ -4,72 +4,50 @@ using UnityEngine;
 
 public class Physic : Level
 {
-    private int _numberObjects;
-    public GameObject[] _pendulumList;
-    public Rigidbody2D _rigidbody2D;
-
-
-    private void Awake()
-    {
-        _numberObjects = 5;
-        _rigidbody2D = Rigidbody;
-    }
+    private const int NUMBER_OBJECTS = 5;
+    public GameObject[] PendulumList;
 
     public override void UpdateSection()
     {
-        for (int id = 0; id < _pendulumList.Length; id++)
+        for (int id = 0; id < PendulumList.Length; id++)
         {
-            _pendulumList[id].GetComponent<Pendulum>().UpdatePendulum2();
+            PendulumList[id].GetComponent<Pendulum>().UpdatePendulum();
         }
     }
 
 
     public override void GenerateSection()
     {
-        _pendulumList = new GameObject[_numberObjects];
+        PendulumList = new GameObject[NUMBER_OBJECTS];
 
-        for (int id = 0; id < _pendulumList.Length; id++)
+        for (int id = 0; id < PendulumList.Length; id++)
         {
-            Pendulum newPendulumScript;
-            GameObject newPendulumObject = new GameObject("Physic");
+            GameObject newPendulumObject = new("Pendulum")
+            {
+                layer = LayerMask.NameToLayer("ground"),
+                tag = "sticky"
+            };
+            newPendulumObject.transform.parent = this.transform;
 
-            newPendulumObject.layer = LayerMask.NameToLayer("ground");
-            newPendulumObject.tag = "sticky";
+            Pendulum newPendulumScript;
             newPendulumScript = (Pendulum) newPendulumObject.AddComponent<Pendulum>();
             newPendulumScript.PendulumId = id;
-            newPendulumScript._physic = this;
-            if(id == 0)
-            {
-                newPendulumScript.PendulumStart = PosStart;
-                newPendulumScript.PendulumStart.y += 2f;
-            } 
-            else
-            {
-                newPendulumScript.PendulumStart = _pendulumList[id - 1].GetComponent<Pendulum>().PendulumEnd;
-            }
-            newPendulumScript.RigidBodyScript = Rigidbody;
-            newPendulumScript.CharacterScriptScript = CharacterScript;
+            newPendulumScript.Physic = this;
             newPendulumScript.GenerateSectionPendulum();
-            _pendulumList[id] = newPendulumObject;
-
-
-
+            PendulumList[id] = newPendulumObject;
         }
-        PosEnd = _pendulumList[_pendulumList.Length - 1].GetComponent<Pendulum>().PendulumEnd;
-
     }
 
     public override void DestroyContent()
     {
-        for (int id = 0; id < _pendulumList.Length; id++)
+        for (int id = 0; id < PendulumList.Length; id++)
         {
-            _pendulumList[id].GetComponent<Pendulum>().DestroyPendulum();
-            GameObject[] GoLine = GameObject.FindGameObjectsWithTag("lineToOrigin");
-            for (int g = 0; g < GoLine.Length; g++)
+            PendulumList[id].GetComponent<Pendulum>().DestroyPendulum();
+            GameObject[] ListLines = GameObject.FindGameObjectsWithTag("lineToOrigin");
+            for (int g = 0; g < ListLines.Length; g++)
             {
-                Destroy(GoLine[g]);
+                Destroy(ListLines[g]);
             }
-            //Destroy(_bookList[id]);
         }
 
     }

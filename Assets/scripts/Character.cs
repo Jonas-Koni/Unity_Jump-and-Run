@@ -18,8 +18,8 @@ public class Character : MonoBehaviour
     public float NotGroundedRemember;
     public Joystick Joystick;
     public static bool IsMovable;
-    public float MoveSpeed;
-    public float JumpForce;
+    public static float MoveSpeed = 7;
+    public static float JumpForce = 14f;
 
     public static float gravityScale;
 
