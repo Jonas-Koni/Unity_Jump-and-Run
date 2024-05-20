@@ -10,18 +10,18 @@ public class Character : MonoBehaviour
     private Animator _animator;
     private GameObject _cameraReflectionObject;
     private float _dirX;
-    private float _jumpPressedRememberTime;
-    private float _notGroundedRememberTime;
+    private const float JUMP_PRESSED_REMEMBER_TIME = 0.15f;
+    private const float NOT_GROUNDED_REMEMBER_TIME = 0.05f;
 
 
     public float JumpPressedRemember;
     public float NotGroundedRemember;
     public Joystick Joystick;
-    public static bool IsMovable;
-    public static float MoveSpeed = 7;
-    public static float JumpForce = 14f;
+    public bool IsMovable;
+    public float MoveSpeed = 7;
+    public float JumpForce = 14f;
 
-    public static float gravityScale;
+    public static float gravityScale = 3;
 
     [SerializeField] private LayerMask jumpableGround;
 
@@ -35,8 +35,6 @@ public class Character : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _cameraReflectionObject = GameObject.Find("RenderCamera");
-        _jumpPressedRememberTime = 0.15f;
-        _notGroundedRememberTime = 0.05f;
         gravityScale = _rigidBody.gravityScale * 9.81f;
 
         IsMovable = true;
@@ -61,7 +59,7 @@ public class Character : MonoBehaviour
 
         if (IsGrounded())
         {
-            NotGroundedRemember = _notGroundedRememberTime;
+            NotGroundedRemember = NOT_GROUNDED_REMEMBER_TIME;
         }
 
         if (NotGroundedRemember > 0 && JumpPressedRemember > 0)
@@ -105,7 +103,7 @@ public class Character : MonoBehaviour
 
     public void Jump()
     {
-        JumpPressedRemember = _jumpPressedRememberTime;
+        JumpPressedRemember = JUMP_PRESSED_REMEMBER_TIME;
     }
     public void MoveHorizontal()
     {

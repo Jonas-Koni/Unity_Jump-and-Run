@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+
+//!!! system.random and unityengine.random are mixed in workspace!
 //RandomPolynomialSpreadNumberGenerator
-public class RandomPolynomialSpreadNumber : ScriptableObject
+public class RandomPolynomialSpreadNumber
 {
     public static float GetRandomNumber(float exponentAmplifier, float startValue, float endValue)
     {
@@ -34,7 +36,7 @@ public class RandomPolynomialSpreadNumber : ScriptableObject
 }
 
 
-public class RandomConstantSpreadNumber : ScriptableObject
+public class RandomConstantSpreadNumber
 {
     public static float GetRandomNumber(float startValue, float endValue)
     {

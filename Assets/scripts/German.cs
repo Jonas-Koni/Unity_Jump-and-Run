@@ -3,20 +3,13 @@ using UnityEngine;
 
 public class German : Level
 {
-    private int _numberBooks;
+    private const int NUMBER_BOOKS = 20;
+    public const int NUMBER_BOOK_TYPES = 7;
     private GameObject[] _bookList;
-    public int _numberBookTypes;
-
-
-    private void Awake()
-    {
-        _numberBooks = 20;
-        _numberBookTypes = 7;
-    }
 
     public override void GenerateSection()
     {
-        _bookList = new GameObject[_numberBooks];
+        _bookList = new GameObject[NUMBER_BOOKS];
 
         for (int id = 0; id < _bookList.Length; id++)
         {
@@ -25,12 +18,14 @@ public class German : Level
 
             System.Type bookType = GetBookType(id);
 
-            newBookObject = new GameObject(GetBookType(id).ToString());
-            newBookObject.layer = LayerMask.NameToLayer("ground");
-            newBookObject.tag = "book";
-            newBookObject.tag = "sticky";
+            newBookObject = new GameObject(GetBookType(id).ToString())
+            {
+                layer = LayerMask.NameToLayer("ground"),
+                tag = "sticky"
+            };
             newBookScript = (Book)newBookObject.AddComponent(bookType);
             newBookScript.BookId = id;
+            newBookScript.BookType = bookType;
             if (id == 0)
             {
                 newBookScript.BookStart = PosStart;
@@ -51,18 +46,7 @@ public class German : Level
         for (int id = 0; id < _bookList.Length; id++)
         {
             _bookList[id].GetComponent<Book>().DestroyBooks();
-            //Destroy(_bookList[id]);
         }
-
-    }
-
-    public override void DisplayLevel(int level)
-    {
-
-    }
-
-    public override void RefreshData()
-    {
     }
 
     public override void UpdateSection()
@@ -80,15 +64,13 @@ public class German : Level
         {
             return typeof(BookStart);
         }
-        if (id == _numberBooks - 1)
+        if (id == NUMBER_BOOKS - 1)
         {
             return typeof(BookEnd);
         }
-        System.Random random = new System.Random(LevelGenerator.Seed * id * (int)PosStart.x * 2); //not knowing if works bc StartX same
+        System.Random random = new(LevelGenerator.Seed * id * (int)PosStart.x * 2); //not knowing if works bc StartX same
 
-        //    public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
-
-        int randomBookType = random.Next(1, _numberBookTypes - 2);
+        int randomBookType = random.Next(1, NUMBER_BOOK_TYPES - 2);
         return randomBookType switch
         {
             0 => typeof(BookStart),
@@ -101,5 +83,4 @@ public class German : Level
             _ => throw new InvalidOperationException()
         };
     }
-
 }

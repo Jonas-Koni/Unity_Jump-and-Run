@@ -16,6 +16,7 @@ public class Pendulum : Physic
     private LevelGenerator levelGeneratorScript;
     private CircleCollider2D circleCollider;
     private SpriteRenderer spriteRenderer;
+    private Character _character;
 
     private Vector2 _pendulumStart;
     private Vector2 _pendulumEnd;
@@ -50,6 +51,15 @@ public class Pendulum : Physic
     {
         levelGenerator = GameObject.Find("LevelGenerator");
         levelGeneratorScript = levelGenerator.GetComponent<LevelGenerator>();
+        _character = GameObject.Find("Character").GetComponent<Character>();
+        //Debug.Log(_character);
+    }
+
+    private void Awake()
+    {
+        levelGenerator = GameObject.Find("LevelGenerator");
+        levelGeneratorScript = levelGenerator.GetComponent<LevelGenerator>();
+        _character = GameObject.Find("Character").GetComponent<Character>();
     }
 
     public void GenerateSectionPendulum()
@@ -123,10 +133,11 @@ public class Pendulum : Physic
 
     public void SetPendulumCoordinates()
     {
+        //UnityEngine.Debug.Log(levelGeneratorScript);
         float jumpX = RandomPolynomialSpreadNumber.GetRandomNumber(2, 1, 3);
         float jumpY = 
-            -Character.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / Character.MoveSpeed, 2)
-            + Character.JumpForce * jumpX / Character.MoveSpeed
+            -Character.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / _character.MoveSpeed, 2)
+            + _character.JumpForce * jumpX / _character.MoveSpeed
             - 0.9f - 2 * _radiusBall;
 
         _pendulumPosCenterBall = new Vector2(

@@ -31,17 +31,19 @@ public class Player_Life : MonoBehaviour
 
     private void Die()
     {
+        Debug.Log("HI");
         _character.transform.position = new Vector3(-5f, -2f, 0);
-        Character.MoveSpeed = 7f; //fester Wert?
+        _character.GetComponent<Character>().MoveSpeed = 7f; //fester Wert?
         _character.GetComponent<Character>().NotGroundedRemember = 0;
         _character.GetComponent<Character>().JumpPressedRemember = 0;
-        _levelGenerator.GetComponent<LevelGenerator>().DeadPlayer();
+        //_levelGenerator.GetComponent<LevelGenerator>().DeadPlayer();
+        LevelGenerator.DeadPlayer();
 
         //animator.SetTrigger("death");
     }
     private void Swim() //später auslagern
     {
-        Character.IsMovable = false;
+        _character.GetComponent<Character>().IsMovable = false;
         _animator.SetInteger("state", 0);
         _rigidbody.gravityScale = 0;
         _rigidbody.velocity = Vector3.zero;

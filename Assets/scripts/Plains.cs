@@ -6,6 +6,7 @@ public class Plains : Level
     public Vector3[] platforms { get; set; }
     private GameObject _levelGenerator;
     private LevelGenerator _levelGeneratorScript;
+    private Character _character;
     private Transform _grass;
     private GameObject[] _levels;
 
@@ -16,12 +17,17 @@ public class Plains : Level
         _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
         //_seed = _levelGeneratorScript._seed;
         _grass = _levelGeneratorScript.Grass;
-        _levels = LevelGenerator._levels;
+        _levels = LevelGenerator.Levels;
+    }
+    private void Awake()
+    {
+        _character = GameObject.Find("Character").GetComponent<Character>();
+
     }
 
     public override void DisplayLevel(int positionInLevels)
     {
-        Vector3[] PositionList = ((Plains)(LevelGenerator._levels[positionInLevels]).GetComponent<Level>()).platforms;
+        Vector3[] PositionList = ((Plains)(LevelGenerator.Levels[positionInLevels]).GetComponent<Level>()).platforms;
 
         for (int i = 0; i < PositionList.Length; i++)
         {
@@ -66,7 +72,8 @@ public class Plains : Level
             do
             {
                 jumpX = Mathf.PerlinNoise((LevelGenerator.Seed + platforms[i - 1].x) + 0.24643f, 1) * amplitudeNoise + marginRight;
-                jumpY = -Rigidbody.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + Character.JumpForce * jumpX / SpeedCharacter - 0.6f;
+                jumpY = -Character.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + _character.JumpForce * jumpX / SpeedCharacter - 0.6f;
+
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
                 newPosY = platforms[i - 1].y + jumpY;

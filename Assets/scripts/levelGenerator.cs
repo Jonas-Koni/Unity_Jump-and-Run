@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using static Cinemachine.DocumentationSortingAttribute;
 
@@ -31,33 +32,32 @@ public class LevelGenerator : MonoBehaviour
 
     public static int CurrentLevel; //test
 
-    public List<Sprite> BookSprites;
+    //public static List<Sprite> BookSprites;
+    public static Sprite[] BookSprites;
 
-    private float _maxSpeed;
-    private GameObject _characterFigure;
-    private Character _characterScript;
-    private Rigidbody2D _rigidbody;
-    public static GameObject[] _levels;
+    private const float MAX_SPEED = 15f;
+    private static GameObject _characterFigure;
+    private static Character _characterScript;
+    private static Rigidbody2D _rigidbody;
+    public static GameObject[] Levels;
 
-    private System.Random _randomLevel;
+    private static System.Random _randomLevel;
 
 
     private void Start()
     {
-        _levels = new GameObject[4];
-        _maxSpeed = 15f;
+        Levels = new GameObject[4];
         Seed = UnityEngine.Random.Range(0, 2000);
         _randomLevel = new System.Random(Seed);
         _grassStatic = Grass;
+
+        BookSprites = Resources.LoadAll<Sprite>("books");
+
         //public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
 
         GenerateFirstLevel(); //level1
         GenerateStartLevels(); //level 2 to lentgh -1
-        for (int i = 0; i < _levels.Length; i++)
-        {
-            //Debug.Log(_levels[i].GetComponent<Level>() + " level: " + GetLevelState(_levels[i].GetComponent<Level>().LevelId));
 
-        }
 
     }
 
@@ -79,7 +79,7 @@ public class LevelGenerator : MonoBehaviour
         Time++;
     }
 
-    public void GenerateFirstLevel()
+    public static void GenerateFirstLevel()
     {
         Level firstLevelScript;
         GameObject firstLevelObject = new GameObject("Plains");
@@ -88,16 +88,16 @@ public class LevelGenerator : MonoBehaviour
         firstLevelScript.CharacterScript = _characterScript;
         firstLevelScript.Rigidbody = _rigidbody;
         firstLevelScript.LevelId = 0;
-        firstLevelScript.SpeedCharacter = Character.MoveSpeed; //notwendig?
+        firstLevelScript.SpeedCharacter = _characterScript.MoveSpeed; //notwendig?
         firstLevelScript.PosStart = new Vector2(-7f, 0f);
         firstLevelScript.GenerateSection();
-        _levels[0] = firstLevelObject;
+        Levels[0] = firstLevelObject;
 
     }
 
-    public void GenerateStartLevels() //level 2-7
+    public static void GenerateStartLevels() //level 2-7
     {
-        for (int id = 1; id < _levels.Length; id++) //level 2-7
+        for (int id = 1; id < Levels.Length; id++) //level 2-7
         {
             int positionInLevels = id;
             GenerateLevel(positionInLevels, id);
@@ -105,7 +105,7 @@ public class LevelGenerator : MonoBehaviour
         DisplayPlatform();
     }
 
-    public void GenerateLevel(int positionInLevels, int levelId)
+    public static void GenerateLevel(int positionInLevels, int levelId)
     {
         LevelState currentLevelState = (LevelState)GetLevelState(levelId);
         Level newLevelScript;
@@ -140,58 +140,57 @@ public class LevelGenerator : MonoBehaviour
         newLevelScript.CharacterScript = _characterScript;
         newLevelScript.LevelId = levelId;
         newLevelScript.SpeedCharacter = CalcSpeedCharacter(positionInLevels, levelId);
-        newLevelScript.PosStart = new Vector2(_levels[positionInLevels - 1].GetComponent<Level>().PosEnd.x + 1f, 1f);
+        newLevelScript.PosStart = new Vector2(Levels[positionInLevels - 1].GetComponent<Level>().PosEnd.x + 1f, 1f);
         newLevelScript.GenerateSection();
 
-        _levels[positionInLevels] = newLevelObject;
+        Levels[positionInLevels] = newLevelObject;
     }
 
-    public float CalcSpeedCharacter(int positionInLevels, int levelId)
+    public static float CalcSpeedCharacter(int positionInLevels, int levelId)
     {
         bool inStartLevels = levelId < 6;
         if (inStartLevels)
         {
-            return Character.MoveSpeed;
+            return _characterScript.MoveSpeed;
         }
 
-        float newSpeed = _levels[positionInLevels - 1].GetComponent<Level>().SpeedCharacter * 1.05f;
-        bool tooFast = newSpeed >= _maxSpeed;
+        float newSpeed = Levels[positionInLevels - 1].GetComponent<Level>().SpeedCharacter * 1.05f;
+        bool tooFast = newSpeed >= MAX_SPEED;
         if (tooFast)
         {
-            return _maxSpeed;
+            return MAX_SPEED;
         }
 
         return newSpeed;
     }
 
-    public void CheckLevel(float posX)
+    public static void CheckLevel(float posX)
     {
-        bool playerLeftToLevelEnd = posX < _levels[^2].GetComponent<Level>().PosEnd.x;
-        Character.MoveSpeed = _levels[^2].GetComponent<Level>().SpeedCharacter;
+        bool playerLeftToLevelEnd = posX < Levels[^2].GetComponent<Level>().PosEnd.x;
+        _characterScript.MoveSpeed = Levels[^2].GetComponent<Level>().SpeedCharacter;
 
         if (playerLeftToLevelEnd)
         {
             return;
         }
-        _characterFigure.GetComponent<ItemCollector>().Test();
-        CurrentLevel = _levels[_levels.Length - 1].GetComponent<Level>().LevelId;
+        CurrentLevel = Levels[Levels.Length - 1].GetComponent<Level>().LevelId;
         DestroyLevels();
         MoveLevels();
         DisplayPlatform();
         RefreshData();
     }
-    public void RefreshData()
+    public static void RefreshData()
     {
-        for (int levelIndex = 0; levelIndex < _levels.Length; levelIndex++)
+        for (int levelIndex = 0; levelIndex < Levels.Length; levelIndex++)
         {
-            _levels[levelIndex].GetComponent<Level>().RefreshData();
+            Levels[levelIndex].GetComponent<Level>().RefreshData();
         }
     }
 
-    public void DestroyLevels()
+    public static void DestroyLevels()
     {
-        _levels[1].GetComponent<Level>().DestroyContent();
-        Destroy(_levels[1].GetComponent<Level>().gameObject);
+        Levels[1].GetComponent<Level>().DestroyContent();
+        Destroy(Levels[1].GetComponent<Level>().gameObject);
         GameObject[] GoGrass = GameObject.FindGameObjectsWithTag("grass");
         for (int g = 0; g < GoGrass.Length; g++)
         {
@@ -199,48 +198,47 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    public void MoveLevels()
+    public static void MoveLevels()
     {
-        for (int i = 1; i < _levels.Length - 1; i++)
+        for (int i = 1; i < Levels.Length - 1; i++)
         {
-            _levels[i] = _levels[i + 1];
+            Levels[i] = Levels[i + 1];
         }
-        GenerateLevel(_levels.Length - 1, _levels[^2].GetComponent<Level>().LevelId + 1);
+        GenerateLevel(Levels.Length - 1, Levels[^2].GetComponent<Level>().LevelId + 1);
     }
 
-    private LevelState GetLevelState(int level)
+    private static LevelState GetLevelState(int level)
     {
         if (level == 0)
         {
             return LevelState.plains;
         }
-        //return levelState.german;
-        //System.Random random = new System.Random(Seed + level);
-        return LevelState.physics;
+        return LevelState.plains;
+        //return LevelState.physics;
         LevelState randomNmb = (LevelState)(_randomLevel.Next(0, 4));
         return randomNmb;
     }
 
-    public void DisplayPlatform()
+    public static void DisplayPlatform()
     {
-        for (int i = 0; i < _levels.Length; i++)
+        for (int i = 0; i < Levels.Length; i++)
         {
-            _levels[i].GetComponent<Level>().DisplayLevel(i);
+            Levels[i].GetComponent<Level>().DisplayLevel(i);
         }
     }
-    public void UpdatePlatform()
+    public static void UpdatePlatform()
     {
-        for (int i = 0; i < _levels.Length; i++)
+        for (int i = 0; i < Levels.Length; i++)
         {
-            _levels[i].GetComponent<Level>().UpdateSection();
+            Levels[i].GetComponent<Level>().UpdateSection();
         }
     }
-    public void DeadPlayer()
+    public static void DeadPlayer()
     {
-        for (int i = 1; i < _levels.Length; i++)
+        for (int i = 1; i < Levels.Length; i++)
         {
-            _levels[i].GetComponent<Level>().DestroyContent();
-            Destroy(_levels[i].GetComponent<Level>().gameObject);
+            Levels[i].GetComponent<Level>().DestroyContent();
+            Destroy(Levels[i].GetComponent<Level>().gameObject);
         }
         Seed = UnityEngine.Random.Range(0, 2000);
         _randomLevel = new System.Random(Seed);
