@@ -21,7 +21,6 @@ public class Character : MonoBehaviour
     public float MoveSpeed = 7;
     public float JumpForce = 14f;
 
-    public static float gravityScale = 3;
 
     [SerializeField] private LayerMask jumpableGround;
 
@@ -35,10 +34,10 @@ public class Character : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _cameraReflectionObject = GameObject.Find("RenderCamera");
-        gravityScale = _rigidBody.gravityScale * 9.81f;
 
         IsMovable = true;
     }
+
 
     void Update()
     {

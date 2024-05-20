@@ -113,6 +113,18 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -120,12 +132,12 @@ TextureImporter:
       name: Terrain (16x16) 4_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 129
-        width: 46
-        height: 46
+        x: 0
+        y: 128
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -141,12 +153,12 @@ TextureImporter:
       name: Terrain (16x16) 4_1
       rect:
         serializedVersion: 2
-        x: 97
-        y: 129
-        width: 46
-        height: 46
+        x: 98
+        y: 130
+        width: 44
+        height: 44
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -162,12 +174,12 @@ TextureImporter:
       name: Terrain (16x16) 4_2
       rect:
         serializedVersion: 2
-        x: 193
-        y: 129
-        width: 46
-        height: 46
+        x: 192
+        y: 128
+        width: 64
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -183,12 +195,12 @@ TextureImporter:
       name: Terrain (16x16) 4_3
       rect:
         serializedVersion: 2
-        x: 289
-        y: 129
-        width: 46
-        height: 46
+        x: 272
+        y: 171
+        width: 48
+        height: 5
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,12 +216,12 @@ TextureImporter:
       name: Terrain (16x16) 4_4
       rect:
         serializedVersion: 2
-        x: 1
-        y: 65
-        width: 46
-        height: 46
+        x: 0
+        y: 64
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -225,12 +237,12 @@ TextureImporter:
       name: Terrain (16x16) 4_5
       rect:
         serializedVersion: 2
-        x: 97
-        y: 65
-        width: 46
-        height: 46
+        x: 96
+        y: 64
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -246,12 +258,12 @@ TextureImporter:
       name: Terrain (16x16) 4_6
       rect:
         serializedVersion: 2
-        x: 193
-        y: 65
-        width: 46
-        height: 46
+        x: 192
+        y: 64
+        width: 64
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -267,12 +279,12 @@ TextureImporter:
       name: Terrain (16x16) 4_7
       rect:
         serializedVersion: 2
-        x: 289
-        y: 65
-        width: 46
-        height: 46
+        x: 272
+        y: 64
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -288,12 +300,12 @@ TextureImporter:
       name: Terrain (16x16) 4_8
       rect:
         serializedVersion: 2
-        x: 1
-        y: 1
-        width: 46
-        height: 46
+        x: 0
+        y: 0
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -309,12 +321,12 @@ TextureImporter:
       name: Terrain (16x16) 4_9
       rect:
         serializedVersion: 2
-        x: 97
-        y: 1
-        width: 46
-        height: 46
+        x: 96
+        y: 0
+        width: 80
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -330,12 +342,12 @@ TextureImporter:
       name: Terrain (16x16) 4_10
       rect:
         serializedVersion: 2
-        x: 193
-        y: 1
-        width: 46
-        height: 46
+        x: 192
+        y: 0
+        width: 64
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -351,12 +363,12 @@ TextureImporter:
       name: Terrain (16x16) 4_11
       rect:
         serializedVersion: 2
-        x: 289
-        y: 1
-        width: 46
-        height: 46
+        x: 272
+        y: 0
+        width: 64
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -364,6 +376,48 @@ TextureImporter:
       bones: []
       spriteID: a5fc6d6a84e19c34cb6884f4b4b63e22
       internalID: -1906996579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terrain (16x16) 4_12
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 155
+        width: 48
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85224e3403d78df4ba095d8042eba985
+      internalID: -1494437757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terrain (16x16) 4_13
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 139
+        width: 48
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27f8f0c25bae45942a0944e0f9f281e9
+      internalID: 1238691074
       vertices: []
       indices: 
       edges: []
@@ -383,6 +437,8 @@ TextureImporter:
       Terrain (16x16) 4_1: -198221194
       Terrain (16x16) 4_10: -639743210
       Terrain (16x16) 4_11: -1906996579
+      Terrain (16x16) 4_12: -1494437757
+      Terrain (16x16) 4_13: 1238691074
       Terrain (16x16) 4_2: 89491156
       Terrain (16x16) 4_3: -440369908
       Terrain (16x16) 4_4: -1876667652

@@ -136,7 +136,7 @@ public class Pendulum : Physic
         //UnityEngine.Debug.Log(levelGeneratorScript);
         float jumpX = RandomPolynomialSpreadNumber.GetRandomNumber(2, 1, 3);
         float jumpY = 
-            -Character.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / _character.MoveSpeed, 2)
+            -LevelGenerator.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / _character.MoveSpeed, 2)
             + _character.JumpForce * jumpX / _character.MoveSpeed
             - 0.9f - 2 * _radiusBall;
 
@@ -209,7 +209,7 @@ public class Pendulum : Physic
         float alpha = -_angleWeightPendulum;
 
         float beta = Mathf.PI / 2 - alpha;
-        float forceGrav = Character.gravityScale * MASS_WEIGHT_PENDULUM;
+        float forceGrav = LevelGenerator.gravityScale * MASS_WEIGHT_PENDULUM;
         float tick = 0.01f;
 
         float forceNormal =

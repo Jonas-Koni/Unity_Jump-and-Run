@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Plains : Level
@@ -5,51 +6,37 @@ public class Plains : Level
     public static int _platfromSize;
     public Vector3[] platforms { get; set; }
     private GameObject _levelGenerator;
-    private LevelGenerator _levelGeneratorScript;
     private Character _character;
-    private Transform _grass;
-    private GameObject[] _levels;
+    private LevelGenerator _levelGeneratorScript;
+    public List<GameObject> _blocks;
 
     private void Start()
     {
         _platfromSize = 4; //does not work
-        _levelGenerator = GameObject.Find("LevelGenerator");
-        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
+
         //_seed = _levelGeneratorScript._seed;
-        _grass = _levelGeneratorScript.Grass;
-        _levels = LevelGenerator.Levels;
+
     }
     private void Awake()
     {
+        _levelGenerator = GameObject.Find("LevelGenerator");
+        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
+
         _character = GameObject.Find("Character").GetComponent<Character>();
-
     }
 
-    public override void DisplayLevel(int positionInLevels)
+    public override void DestroyContent()
     {
-        Vector3[] PositionList = ((Plains)(LevelGenerator.Levels[positionInLevels]).GetComponent<Level>()).platforms;
-
-        for (int i = 0; i < PositionList.Length; i++)
+        for (int i = 0; i < _blocks.Count; i++)
         {
-            for (int l = 0; l < PositionList[i].z; l++)
-            {
-                //UnityEngine.Debug.Log(PositionList[i].y);
-                Instantiate(
-                    LevelGenerator._grassStatic, 
-                    new Vector2(
-                        PositionList[i].x + 1.7f * l, 
-                        -4.2f + PositionList[i].y
-                        ), 
-                    Quaternion.identity);
-            }
+            Destroy(_blocks[i]);
         }
+        Destroy(this);
+        Destroy(gameObject);
     }
-
 
     public override void GenerateSection()
     {
-
-
         Vector2 Range = new Vector2(0.5f, 2.0f);
         platforms = new Vector3[4];
         platforms[0] = new Vector3(PosStart.x, PosStart.y, 10);
@@ -72,8 +59,7 @@ public class Plains : Level
             do
             {
                 jumpX = Mathf.PerlinNoise((LevelGenerator.Seed + platforms[i - 1].x) + 0.24643f, 1) * amplitudeNoise + marginRight;
-                jumpY = -Character.gravityScale * 9.81f * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + _character.JumpForce * jumpX / SpeedCharacter - 0.6f;
-
+                jumpY = -LevelGenerator.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + _character.JumpForce * jumpX / SpeedCharacter - 0.6f;
 
                 newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
                 newPosY = platforms[i - 1].y + jumpY;
@@ -106,5 +92,32 @@ public class Plains : Level
         platforms[platforms.Length - 1] = new Vector3(lastPosX, lastPosY, 3);
 
         PosEnd = new Vector2(lastPosX + platforms[platforms.Length - 1].z * 1.7f, lastPosY);
+
+        Vector3[] PositionList = platforms;
+        _blocks = new List<GameObject>();
+
+        GameObject GrassGameObject = _levelGeneratorScript.GrassGameObject;
+
+        float scale = GrassGameObject.transform.localScale.x;
+        float x     = GrassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.x;
+        float y     = GrassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.y;
+
+        for (int i = 0; i < PositionList.Length; i++)
+        {
+            for (int l = 0; l < PositionList[i].z; l++)
+            {  
+                Object instantiatedObject = Instantiate(
+                    GrassGameObject,
+                    new Vector2(PositionList[i].x + x*scale * l, -4.2f + PositionList[i].y),
+                    Quaternion.identity);
+
+                GameObject instantiatedGameObject = instantiatedObject as GameObject;
+                BoxCollider2D boxCollider = instantiatedGameObject.GetComponent<BoxCollider2D>();
+                boxCollider.size = new Vector2(x, y);
+                instantiatedGameObject.transform.parent = this.transform;
+                _blocks.Add(instantiatedGameObject);
+            }
+        }
+
     }
 }

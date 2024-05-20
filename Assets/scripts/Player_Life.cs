@@ -31,7 +31,6 @@ public class Player_Life : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("HI");
         _character.transform.position = new Vector3(-5f, -2f, 0);
         _character.GetComponent<Character>().MoveSpeed = 7f; //fester Wert?
         _character.GetComponent<Character>().NotGroundedRemember = 0;
