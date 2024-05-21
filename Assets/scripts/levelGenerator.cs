@@ -13,6 +13,7 @@ public class LevelGenerator : MonoBehaviour
     public Material MaterialLine;
     public Sprite SpritePendulum;
     public GameObject GrassGameObject;
+    public GameObject DirtGameObject;
 
     public static float gravityScale = 3;
 

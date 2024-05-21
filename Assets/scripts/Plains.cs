@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Plains : Level
 {
@@ -9,6 +11,10 @@ public class Plains : Level
     private Character _character;
     private LevelGenerator _levelGeneratorScript;
     public List<GameObject> _blocks;
+    
+    private Vector2 _blockSize;
+    private const float GRASS_OFFSET_Y = -4.2f;
+    private float scaleBlock;
 
     private void Start()
     {
@@ -97,27 +103,48 @@ public class Plains : Level
         _blocks = new List<GameObject>();
 
         GameObject GrassGameObject = _levelGeneratorScript.GrassGameObject;
+        GameObject DirtGameObject = _levelGeneratorScript.DirtGameObject;
 
-        float scale = GrassGameObject.transform.localScale.x;
-        float x     = GrassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.x;
-        float y     = GrassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.y;
+        Vector3 BlockSize = GrassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size;
+        scaleBlock = GrassGameObject.transform.localScale.x;
+        _blockSize = new Vector2(BlockSize.x, BlockSize.y);
 
         for (int i = 0; i < PositionList.Length; i++)
         {
+            float marginY = GRASS_OFFSET_Y + PositionList[i].y;
             for (int l = 0; l < PositionList[i].z; l++)
-            {  
-                Object instantiatedObject = Instantiate(
-                    GrassGameObject,
-                    new Vector2(PositionList[i].x + x*scale * l, -4.2f + PositionList[i].y),
-                    Quaternion.identity);
+            {
+                float positionX = PositionList[i].x + _blockSize.x * scaleBlock * l;
+                Vector2 positionBlock = new(positionX, marginY);
+                AddBlock(GrassGameObject, positionBlock);
 
-                GameObject instantiatedGameObject = instantiatedObject as GameObject;
-                BoxCollider2D boxCollider = instantiatedGameObject.GetComponent<BoxCollider2D>();
-                boxCollider.size = new Vector2(x, y);
-                instantiatedGameObject.transform.parent = this.transform;
-                _blocks.Add(instantiatedGameObject);
+                int indexDirtBlock = 1;
+                while(IsBlockAboveWater(marginY, indexDirtBlock))
+                {
+                    float positionY = marginY - indexDirtBlock * _blockSize.y * scaleBlock;
+                    Vector2 positionDirtBlock = new(positionX, positionY);
+                    AddBlock(DirtGameObject, positionDirtBlock);
+                    indexDirtBlock++;
+                }
             }
         }
+    }
 
+    private bool IsBlockAboveWater(float marginY, int indexDirtBlock)
+    {
+        float heightWater = GameObject.Find("Water").GetComponent<BoxCollider2D>().bounds.max.y;
+        float offSetGrassBlock = 0.5f * _blockSize.y * scaleBlock;
+        float offSetDirtBlocksAbove = -indexDirtBlock * _blockSize.y * scaleBlock;
+        return marginY + offSetGrassBlock + offSetDirtBlocksAbove > heightWater;
+    }
+
+    private void AddBlock(GameObject gameObject, Vector2 position)
+    {
+        UnityEngine.Object instantiatedObject = Instantiate(gameObject, position, Quaternion.identity);
+        GameObject instantiatedGameObject = instantiatedObject as GameObject;
+        BoxCollider2D boxColliderDirt = instantiatedGameObject.GetComponent<BoxCollider2D>();
+        boxColliderDirt.size = new Vector2(_blockSize.x, _blockSize.y);
+        instantiatedGameObject.transform.parent = this.transform;
+        _blocks.Add(instantiatedGameObject);
     }
 }
