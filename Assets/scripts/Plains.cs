@@ -61,6 +61,9 @@ public class Plains : Level
         _platforms[0] = new Vector3(PosStart.x, PosStart.y, FIRST_PLATFORM_NUMBER_BLOCKS);
         _numberBlocksInPlatform[0] = FIRST_PLATFORM_NUMBER_BLOCKS;
 
+
+
+
         for (int i = 1; i < _platforms.Length - 1; i++)
         {
             float jumpPosY = RandomConstantSpreadNumber.GetRandomNumber(BLOCK_POSITION_Y_MIN, BLOCK_POSITION_Y_MAX);
