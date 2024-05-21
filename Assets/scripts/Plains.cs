@@ -49,49 +49,22 @@ public class Plains : Level
 
         for (int i = 1; i < platforms.Length - 1; i++)
         {
-            bool perfectPosition = false;
+            float jumpPosY = RandomConstantSpreadNumber.GetRandomNumber(0.5f, 3f);
+            float jumpHeight = jumpPosY - platforms[i - 1].y;
 
-            float amplitudeNoise = 5.0f;
-            float marginRight = 4.0f;
+            float speedX = SpeedCharacter;
+            float speedY = _character.JumpForce;
 
-            int platformLength;
+            float root = Mathf.Sqrt(Mathf.Pow(speedY, 2) + 2 * LevelGenerator.gravityScale * jumpHeight);
+            float jumpWidth = speedX / LevelGenerator.gravityScale * (speedY + root);
 
-            float jumpX;
-            float jumpY;
+            float newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.65f + jumpWidth;
+            float newPosY = platforms[i - 1].y + jumpHeight;
 
-            float newPosX;
-            float newPosY;
-
-            do
-            {
-                jumpX = Mathf.PerlinNoise((LevelGenerator.Seed + platforms[i - 1].x) + 0.24643f, 1) * amplitudeNoise + marginRight;
-                jumpY = -LevelGenerator.gravityScale * Mathf.Pow(jumpX, 2) * 0.5f * Mathf.Pow(1 / SpeedCharacter, 2) + _character.JumpForce * jumpX / SpeedCharacter - 0.6f;
-
-                newPosX = platforms[i - 1].x + platforms[i - 1].z * 1.7f + jumpX;// + PlatformLength * 1.7f; //variabler Wert, später bitte konstant!
-                newPosY = platforms[i - 1].y + jumpY;
-
-                bool heightToLow = newPosY < Range.x;
-                bool heightToHigh = newPosY > Range.y;
-
-                if (heightToLow)
-                {
-                    amplitudeNoise *= 0.85f;
-                    marginRight *= 0.85f;
-                }
-                if (heightToHigh)
-                {
-                    amplitudeNoise *= 1.15f;
-                    marginRight *= 1.15f;
-                }
-                if ((!heightToLow && !heightToHigh))
-                {
-                    perfectPosition = true;
-                }
-
-            } while (!perfectPosition);
-
-            platformLength = (int)(Mathf.PerlinNoise(LevelGenerator.Seed + i + 0.017434f, LevelGenerator.Seed + i + 0.137434f) * 10 + 1);
+            int platformLength = (int)(Mathf.PerlinNoise(LevelGenerator.Seed + i + 0.017434f, LevelGenerator.Seed + i + 0.137434f) * 10 + 1);
             platforms[i] = new Vector3(newPosX, newPosY, platformLength);
+
+
         }
         float lastPosX = platforms[platforms.Length - 2].x + platforms[platforms.Length - 2].z * 1.7f + 3f;
         float lastPosY = 0f;
