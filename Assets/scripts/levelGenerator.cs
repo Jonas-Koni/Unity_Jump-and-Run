@@ -177,7 +177,7 @@ public class LevelGenerator : MonoBehaviour
     }
     public static void DeadPlayer()
     {
-        for (int i = 1; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Length; i++)
         {
             Levels[i].GetComponent<Level>().DestroyContent();
             Destroy(Levels[i].GetComponent<Level>().gameObject);
