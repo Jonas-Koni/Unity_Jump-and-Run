@@ -29,6 +29,16 @@ public class Plains : Level
     private void Awake()
     {
         _blocks = new List<GameObject>();
+        GameObject _levelGenerator = GameObject.Find("LevelGenerator");
+        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
+
+        _character = GameObject.Find("Character").GetComponent<Character>();
+        _grassGameObject = _levelGeneratorScript.GrassGameObject;
+        _dirtGameObject = _levelGeneratorScript.DirtGameObject;
+
+        Vector3 BlockSize = _grassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size;
+        scaleBlock = _grassGameObject.transform.localScale.x;
+        _blockSize = new Vector2(BlockSize.x, BlockSize.y);
     }
 
     public override void DestroyContent()
@@ -43,26 +53,10 @@ public class Plains : Level
 
     public override void GenerateSection()
     {
-        GameObject _levelGenerator = GameObject.Find("LevelGenerator");
-        _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
-
-        _character = GameObject.Find("Character").GetComponent<Character>();
-
-        _grassGameObject = _levelGeneratorScript.GrassGameObject;
-        _dirtGameObject = _levelGeneratorScript.DirtGameObject;
-
-        //Debug.Log("3");
-        Vector3 BlockSize = _grassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size;
-        scaleBlock = _grassGameObject.transform.localScale.x;
-        _blockSize = new Vector2(BlockSize.x, BlockSize.y);
-
         _platforms = new Vector2[NUMBER_PLATFORMS];
         _numberBlocksInPlatform = new int[NUMBER_PLATFORMS];
         _platforms[0] = new Vector3(PosStart.x, PosStart.y, FIRST_PLATFORM_NUMBER_BLOCKS);
         _numberBlocksInPlatform[0] = FIRST_PLATFORM_NUMBER_BLOCKS;
-
-
-
 
         for (int i = 1; i < _platforms.Length - 1; i++)
         {
