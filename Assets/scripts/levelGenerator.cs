@@ -56,8 +56,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log(Time);
-        CheckLevel(_rigidbody.transform.position.x);
+        CheckLevel();
     }
 
     private void FixedUpdate()
@@ -120,34 +119,20 @@ public class LevelGenerator : MonoBehaviour
         return newSpeed;
     }
 
-    public static void CheckLevel(float posX)
+    private static void CheckLevel()
     {
-        bool playerLeftToLevelEnd = posX < Levels[^2].GetComponent<Level>().PosEnd.x;
+        bool playerLeftToLevelEnd = _rigidbody.transform.position.x < Levels[^2].GetComponent<Level>().PosEnd.x;
         _characterScript.MoveSpeed = Levels[^2].GetComponent<Level>().SpeedCharacter;
 
         if (playerLeftToLevelEnd)
         {
             return;
         }
-        CurrentLevel = Levels[Levels.Length - 1].GetComponent<Level>().LevelId;
-        //DestroyLevels();
+        CurrentLevel = Levels[^1].GetComponent<Level>().LevelId;
         MoveLevels();
         DisplayPlatform();
-        RefreshData();
-    }
-    public static void RefreshData()
-    {
-        for (int levelIndex = 0; levelIndex < Levels.Length; levelIndex++)
-        {
-            Levels[levelIndex].GetComponent<Level>().RefreshData();
-        }
     }
 
-    public static void DestroyLevels()
-    {
-        Levels[1].GetComponent<Level>().DestroyContent();
-        Destroy(Levels[1].GetComponent<Level>().gameObject);
-    }
 
     public static void MoveLevels()
     {
