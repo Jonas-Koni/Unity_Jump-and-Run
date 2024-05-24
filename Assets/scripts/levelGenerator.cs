@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEditor.VersionControl;
@@ -16,17 +17,6 @@ public class LevelGenerator : MonoBehaviour
     public GameObject DirtGameObject;
 
     public static float gravityScale;
-
-    enum LevelState 
-    { 
-        plains, 
-        maths, 
-        german, 
-        physics, 
-        biology, 
-        english, 
-        history 
-    }
 
     public static int Seed;
     public static int Time;
@@ -88,34 +78,10 @@ public class LevelGenerator : MonoBehaviour
 
     public static void GenerateLevel(int positionInLevels, int levelId)
     {
-        LevelState currentLevelState = (LevelState)GetLevelState(levelId);
-        Level newLevelScript;
-        GameObject newLevelObject;
-        switch (currentLevelState)
-        {
-            case LevelState.plains:
-                newLevelObject = new GameObject("Plains");
-                newLevelScript = newLevelObject.AddComponent<Plains>();
-                break;
+        System.Type levelType = GetLevelType(levelId);
+        GameObject newLevelObject = new GameObject(levelType.ToString());
+        Level newLevelScript = (Level) newLevelObject.AddComponent(levelType);
 
-            case LevelState.maths:
-                newLevelObject = new GameObject("Maths");
-                newLevelScript = newLevelObject.AddComponent<Maths>();
-                break;
-            case LevelState.german:
-                newLevelObject = new GameObject("German");
-                newLevelScript = newLevelObject.AddComponent<German>();
-                break;
-            case LevelState.physics:
-                newLevelObject = new GameObject("Physic");
-                newLevelScript = newLevelObject.AddComponent<Physic>();
-                break;
-            default:
-                return;
-                //case levelState.physics:
-                //newLevel = new Physics(levelId, PositionList, false);
-
-        }
         newLevelScript.Rigidbody = _rigidbody;
         newLevelScript.CharacterScript = _characterScript;
         newLevelScript.LevelId = levelId;
@@ -193,16 +159,21 @@ public class LevelGenerator : MonoBehaviour
         GenerateLevel(Levels.Length - 1, Levels[^2].GetComponent<Level>().LevelId + 1);
     }
 
-    private static LevelState GetLevelState(int level)
+    private static System.Type GetLevelType(int level)
     {
-        if (level == 0)
+        if(level == 0)
         {
-            return LevelState.plains;
+            return typeof(Plains);
         }
-        //return LevelState.plains;
-        //return LevelState.physics;
-        LevelState randomNmb = (LevelState)(_randomLevel.Next(0, 4));
-        return randomNmb;
+        int randomLevelType = _randomLevel.Next(0, 4);
+        return randomLevelType switch
+        {
+            0 => typeof(Plains),
+            1 => typeof(Maths),
+            2 => typeof(German),
+            3 => typeof(Physic),
+            _ => throw new InvalidOperationException()
+        };
     }
 
     public static void DisplayPlatform()
