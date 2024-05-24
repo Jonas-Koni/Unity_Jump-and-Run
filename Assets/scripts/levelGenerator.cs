@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using static Cinemachine.DocumentationSortingAttribute;
@@ -24,7 +25,12 @@ public class LevelGenerator : MonoBehaviour
     public static Sprite[] BookSprites;
     public static GameObject[] Levels;
 
+    private const float START_SPEED = 7f;
     private const float MAX_SPEED = 15f;
+    private const float DECREASE_SPEED = 11f; //see Documentation! (not existing right now)
+    private const int NUMBER_CONSTANT_SPEED_LEVELS = 3;
+
+
     private static GameObject _characterFigure;
     private static Character _characterScript;
     private static Rigidbody2D _rigidbody;
@@ -84,7 +90,7 @@ public class LevelGenerator : MonoBehaviour
         newLevelScript.Rigidbody = _rigidbody;
         newLevelScript.CharacterScript = _characterScript;
         newLevelScript.LevelId = levelId;
-        newLevelScript.SpeedCharacter = CalcSpeedCharacter(positionInLevels, levelId);
+        newLevelScript.SpeedCharacter = CalcSpeedCharacter(levelId);
 
         Vector2 posStart;
         if(levelId == 0)
@@ -101,22 +107,19 @@ public class LevelGenerator : MonoBehaviour
         Levels[positionInLevels] = newLevelObject;
     }
 
-    public static float CalcSpeedCharacter(int positionInLevels, int levelId)
+    public static float CalcSpeedCharacter(int levelId)
     {
-        bool inStartLevels = levelId < 6;
-        if (inStartLevels)
+        if (levelId < NUMBER_CONSTANT_SPEED_LEVELS)
         {
-            return _characterScript.MoveSpeed;
+            return START_SPEED;
         }
 
-        float newSpeed = Levels[positionInLevels - 1].GetComponent<Level>().SpeedCharacter * 1.05f;
-        bool tooFast = newSpeed >= MAX_SPEED;
-        if (tooFast)
-        {
-            return MAX_SPEED;
-        }
+        float a = MAX_SPEED - START_SPEED;
+        float b = -1f / 10f * Mathf.Log((MAX_SPEED - DECREASE_SPEED) / a, 2f);
+        float c = MAX_SPEED;
+        float n = levelId - NUMBER_CONSTANT_SPEED_LEVELS;
 
-        return newSpeed;
+        return -a * Mathf.Pow(2, -b * n) + c;
     }
 
     private static void CheckLevel()
