@@ -6,25 +6,30 @@ using UnityEngine.UIElements;
 public class Plains : Level
 {
     private const int NUMBER_PLATFORMS = 8;
-    private int[] _numberBlocksInPlatform;
-    private Vector2[] _platforms;
-    private Character _character;
-    private LevelGenerator _levelGeneratorScript;
+    private Vector2[] _positionPlatforms;
+
     private List<GameObject> _blocks;
+    private int[] _numberBlocksInPlatform;
+    private const int FIRST_PLATFORM_NUMBER_BLOCKS = 5;
+    private const int NUMBER_BLOCKS_IN_PLATFORM_MIN_VALUE = 2;
+    private const int NUMBER_BLOCKS_IN_PLATFORM_MAX_VALUE = 5;
+
     private Vector2 _blockSize;
-    private float scaleBlock;
+    private float _scaleBlock;
+
     private const float GRASS_OFFSET_Y = -4.2f;
-    private const float BLOCK_POSITION_Y_MAX = 2.3f;
     private const float BLOCK_POSITION_Y_MIN = 0.2f;
-    private const float MARGIN_X_LAST_BLOCK = 5f;
+    private const float BLOCK_POSITION_Y_MAX = 2.3f;
+
     private const float RANDOM_MARGIN_X_MIN_VALUE = -0.4f;
     private const float RANDOM_MARGIN_X_MAX_VALUE = -0.17f;
-    private const int FIRST_PLATFORM_NUMBER_BLOCKS = 5;
-    private const int PLATFORM_LENGTH_MIN_VALUE = 2;
-    private const int PLATFORM_LENGTH_MAX_VALUE = 5;
+    private const float MARGIN_X_LAST_BLOCK = 5f;
 
     private GameObject _grassGameObject;
     private GameObject _dirtGameObject;
+
+    private Character _characterScript;
+    private LevelGenerator _levelGeneratorScript;
 
     private void Awake()
     {
@@ -32,13 +37,14 @@ public class Plains : Level
         GameObject _levelGenerator = GameObject.Find("LevelGenerator");
         _levelGeneratorScript = _levelGenerator.GetComponent<LevelGenerator>();
 
-        _character = GameObject.Find("Character").GetComponent<Character>();
+        _characterScript = GameObject.Find("Character").GetComponent<Character>();
         _grassGameObject = _levelGeneratorScript.GrassGameObject;
         _dirtGameObject = _levelGeneratorScript.DirtGameObject;
 
-        Vector3 BlockSize = _grassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size;
-        scaleBlock = _grassGameObject.transform.localScale.x;
-        _blockSize = new Vector2(BlockSize.x, BlockSize.y);
+        Vector3 blockBoundSize = _grassGameObject.GetComponent<SpriteRenderer>().sprite.bounds.size;
+
+        _scaleBlock = _grassGameObject.transform.localScale.x;
+        _blockSize = new Vector2(blockBoundSize.x, blockBoundSize.y);
     }
 
     public override void DestroyContent()
@@ -53,51 +59,54 @@ public class Plains : Level
 
     public override void GenerateSection()
     {
-        _platforms = new Vector2[NUMBER_PLATFORMS];
+        _positionPlatforms = new Vector2[NUMBER_PLATFORMS];
         _numberBlocksInPlatform = new int[NUMBER_PLATFORMS];
-        _platforms[0] = new Vector3(PosStart.x, PosStart.y, FIRST_PLATFORM_NUMBER_BLOCKS);
+        _positionPlatforms[0] = new Vector2(PosStart.x, PosStart.y);
         _numberBlocksInPlatform[0] = FIRST_PLATFORM_NUMBER_BLOCKS;
 
-        for (int i = 1; i < _platforms.Length - 1; i++)
+        for (int i = 1; i < _positionPlatforms.Length - 1; i++)
         {
             float jumpPosY = RandomConstantSpreadNumber.GetRandomNumber(BLOCK_POSITION_Y_MIN, BLOCK_POSITION_Y_MAX);
-            float jumpHeight = jumpPosY - _platforms[i - 1].y;
+            float jumpHeight = jumpPosY - _positionPlatforms[i - 1].y;
 
             float speedX = SpeedCharacter;
-            float speedY = _character.JumpForce;
+            float speedY = _characterScript.JumpForce;
 
             float randomMarginX = RandomConstantSpreadNumber.GetRandomNumber(RANDOM_MARGIN_X_MIN_VALUE, RANDOM_MARGIN_X_MAX_VALUE);
 
             float root = Mathf.Sqrt(Mathf.Pow(speedY, 2) + 2 * LevelGenerator.gravityScale * jumpHeight);
             float jumpWidth = speedX / LevelGenerator.gravityScale * (speedY + root) + randomMarginX;
 
-            float newPosX = _platforms[i - 1].x + _numberBlocksInPlatform[i - 1] * _blockSize.x * scaleBlock + jumpWidth;
-            float newPosY = _platforms[i - 1].y + jumpHeight;
+            float newPosX = _positionPlatforms[i - 1].x + _numberBlocksInPlatform[i - 1] * _blockSize.x * _scaleBlock + jumpWidth;
+            float newPosY = _positionPlatforms[i - 1].y + jumpHeight;
 
-            int platformLength = (int) RandomConstantSpreadNumber.GetRandomNumber(PLATFORM_LENGTH_MIN_VALUE, PLATFORM_LENGTH_MAX_VALUE);
-            _platforms[i] = new Vector3(newPosX, newPosY, platformLength);
+            int platformLength = (int) RandomConstantSpreadNumber.GetRandomNumber(
+                NUMBER_BLOCKS_IN_PLATFORM_MIN_VALUE,
+                NUMBER_BLOCKS_IN_PLATFORM_MAX_VALUE);
+
+            _positionPlatforms[i] = new Vector2(newPosX, newPosY);
             _numberBlocksInPlatform[i] = platformLength;
         }
 
-        float lastPosX = _platforms[_platforms.Length - 2].x + _numberBlocksInPlatform[_platforms.Length - 2] * _blockSize.y * scaleBlock + MARGIN_X_LAST_BLOCK;
+        float lastPosX = _positionPlatforms[^2].x + _numberBlocksInPlatform[^2] * _blockSize.y * _scaleBlock + MARGIN_X_LAST_BLOCK;
         float lastPosY = 0f;
-        _platforms[_platforms.Length - 1] = new Vector3(lastPosX, lastPosY, 3);
+        _positionPlatforms[^1] = new Vector2(lastPosX, lastPosY);
 
-        PosEnd = new Vector2(lastPosX + _numberBlocksInPlatform[_platforms.Length - 1] * 1.7f, lastPosY);
+        PosEnd = new Vector2(lastPosX + _numberBlocksInPlatform[^1] * _blockSize.y * _scaleBlock, lastPosY);
 
-        for (int i = 0; i < _platforms.Length; i++)
+        for (int i = 0; i < _positionPlatforms.Length; i++)
         {
-            float marginY = GRASS_OFFSET_Y + _platforms[i].y;
+            float marginY = GRASS_OFFSET_Y + _positionPlatforms[i].y;
             for (int l = 0; l < _numberBlocksInPlatform[i]; l++)
             {
-                float positionX = _platforms[i].x + _blockSize.x * scaleBlock * l;
-                Vector2 positionBlock = new(positionX, marginY);
-                AddBlock(_grassGameObject, positionBlock);
+                float positionX = _positionPlatforms[i].x + _blockSize.x * _scaleBlock * l;
+                Vector2 positionGrassBlock = new(positionX, marginY);
+                AddBlock(_grassGameObject, positionGrassBlock);
 
-                int indexDirtBlock = 1;
+                int indexDirtBlock = 0;
                 while(IsBlockAboveWater(marginY, indexDirtBlock))
                 {
-                    float positionY = marginY - indexDirtBlock * _blockSize.y * scaleBlock;
+                    float positionY = marginY - (indexDirtBlock + 1) * _blockSize.y * _scaleBlock;
                     Vector2 positionDirtBlock = new(positionX, positionY);
                     AddBlock(_dirtGameObject, positionDirtBlock);
                     indexDirtBlock++;
@@ -109,8 +118,8 @@ public class Plains : Level
     private bool IsBlockAboveWater(float marginY, int indexDirtBlock)
     {
         float heightWater = GameObject.Find("Water").GetComponent<BoxCollider2D>().bounds.max.y;
-        float offSetGrassBlock = 0.5f * _blockSize.y * scaleBlock;
-        float offSetDirtBlocksAbove = -indexDirtBlock * _blockSize.y * scaleBlock;
+        float offSetGrassBlock = -0.5f * _blockSize.y * _scaleBlock;
+        float offSetDirtBlocksAbove = -indexDirtBlock * _blockSize.y * _scaleBlock;
         return marginY + offSetGrassBlock + offSetDirtBlocksAbove > heightWater;
     }
 
