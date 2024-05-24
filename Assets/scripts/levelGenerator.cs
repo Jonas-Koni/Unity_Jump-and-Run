@@ -60,8 +60,7 @@ public class LevelGenerator : MonoBehaviour
 
         gravityScale = _rigidbody.gravityScale * 9.81f;
 
-        GenerateFirstLevel(); //level1
-        GenerateStartLevels(); //level 2 to lentgh -1
+        GenerateStartLevels();
     }
 
 
@@ -77,25 +76,9 @@ public class LevelGenerator : MonoBehaviour
         Time++;
     }
 
-    public static void GenerateFirstLevel()
+    public static void GenerateStartLevels() //should be moved to Start (remove function), when DeadPlayer reload scene?
     {
-        Level firstLevelScript;
-        GameObject firstLevelObject = new GameObject("Plains");
-        firstLevelScript = firstLevelObject.AddComponent<Plains>();
-
-        firstLevelScript.CharacterScript = _characterScript;
-        firstLevelScript.Rigidbody = _rigidbody;
-        firstLevelScript.LevelId = 0;
-        firstLevelScript.SpeedCharacter = _characterScript.MoveSpeed; //notwendig?
-        firstLevelScript.PosStart = new Vector2(-7f, 0f);
-        firstLevelScript.GenerateSection();
-        Levels[0] = firstLevelObject;
-
-    }
-
-    public static void GenerateStartLevels() //level 2-7
-    {
-        for (int id = 1; id < Levels.Length; id++) //level 2-7
+        for (int id = 0; id < Levels.Length; id++)
         {
             int currentLevel = id;
             GenerateLevel(currentLevel, id);
@@ -137,13 +120,20 @@ public class LevelGenerator : MonoBehaviour
         newLevelScript.CharacterScript = _characterScript;
         newLevelScript.LevelId = levelId;
         newLevelScript.SpeedCharacter = CalcSpeedCharacter(positionInLevels, levelId);
-        newLevelScript.PosStart = new Vector2(Levels[positionInLevels - 1].GetComponent<Level>().PosEnd.x + 1f, 1f);
 
+        Vector2 posStart;
+        if(levelId == 0)
+        {
+            posStart = new Vector2(-7f, 0f);
+        } else
+        {
+            Level previousLevel = Levels[positionInLevels - 1].GetComponent<Level>();
+            posStart = new Vector2(previousLevel.PosEnd.x + 1f, 1f);
+        }
+        newLevelScript.PosStart = posStart;
         newLevelScript.GenerateSection();
 
-
         Levels[positionInLevels] = newLevelObject;
-        
     }
 
     public static float CalcSpeedCharacter(int positionInLevels, int levelId)
