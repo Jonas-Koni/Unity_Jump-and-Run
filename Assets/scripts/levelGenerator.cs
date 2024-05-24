@@ -15,7 +15,7 @@ public class LevelGenerator : MonoBehaviour
     public GameObject GrassGameObject;
     public GameObject DirtGameObject;
 
-    public static float gravityScale = 3;
+    public static float gravityScale;
 
     enum LevelState 
     { 
@@ -41,30 +41,29 @@ public class LevelGenerator : MonoBehaviour
     private static System.Random _randomLevel;
 
 
-    private void Start()
+    private void Awake()
     {
         Levels = new GameObject[4];
         Seed = UnityEngine.Random.Range(0, 2000);
         _randomLevel = new System.Random(Seed);
 
+        BookSprites = Resources.LoadAll<Sprite>("books");
+
+        gravityScale = 3;
+    }
+
+    private void Start()
+    {
         _characterFigure = GameObject.Find("Character");
         _characterScript = _characterFigure.GetComponent<Character>();
         _rigidbody = _characterFigure.GetComponent<Rigidbody2D>();
 
         gravityScale = _rigidbody.gravityScale * 9.81f;
 
-        BookSprites = Resources.LoadAll<Sprite>("books");
-
         GenerateFirstLevel(); //level1
         GenerateStartLevels(); //level 2 to lentgh -1
     }
 
-    private void Awake()
-    {
-        _characterFigure = GameObject.Find("Character");
-        _rigidbody = _characterFigure.GetComponent<Rigidbody2D>();
-        _characterScript = _characterFigure.GetComponent<Character>();
-    }
 
     private void Update()
     {
@@ -210,7 +209,7 @@ public class LevelGenerator : MonoBehaviour
         {
             return LevelState.plains;
         }
-        return LevelState.plains;
+        //return LevelState.plains;
         //return LevelState.physics;
         LevelState randomNmb = (LevelState)(_randomLevel.Next(0, 4));
         return randomNmb;
