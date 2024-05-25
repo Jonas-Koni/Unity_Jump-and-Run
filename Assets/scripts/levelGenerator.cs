@@ -23,12 +23,14 @@ public class LevelGenerator : MonoBehaviour
     public static int Time;
     public static int CurrentLevel;
     public static Sprite[] BookSprites;
-    public static GameObject[] Levels;
+    public static List<GameObject> Levels;
 
     private const float START_SPEED = 7f;
     private const float MAX_SPEED = 15f;
     private const float DECREASE_SPEED = 11f; //see Documentation! (not existing right now)
     private const int NUMBER_CONSTANT_SPEED_LEVELS = 3;
+
+    private const int NUMBER_START_LEVELS = 4;
 
 
     private static GameObject _characterFigure;
@@ -39,7 +41,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Awake()
     {
-        Levels = new GameObject[4];
+        Levels = new List<GameObject>();
         Seed = UnityEngine.Random.Range(0, 2000);
         _randomLevel = new System.Random(Seed);
 
@@ -73,15 +75,14 @@ public class LevelGenerator : MonoBehaviour
 
     public static void GenerateStartLevels() //should be moved to Start (remove function), when DeadPlayer reload scene?
     {
-        for (int id = 0; id < Levels.Length; id++)
+        for (int id = 0; id < NUMBER_START_LEVELS; id++)
         {
-            int currentLevel = id;
-            GenerateLevel(currentLevel, id);
+            GenerateLevel(id);
         }
         DisplayPlatform();
     }
 
-    public static void GenerateLevel(int positionInLevels, int levelId)
+    public static void GenerateLevel(int levelId)
     {
         System.Type levelType = GetLevelType(levelId);
         GameObject newLevelObject = new GameObject(levelType.ToString());
@@ -98,13 +99,13 @@ public class LevelGenerator : MonoBehaviour
             posStart = new Vector2(-7f, 0f);
         } else
         {
-            Level previousLevel = Levels[positionInLevels - 1].GetComponent<Level>();
+            Level previousLevel = Levels[^1].GetComponent<Level>();
             posStart = new Vector2(previousLevel.PosEnd.x + 1f, 1f);
         }
         newLevelScript.PosStart = posStart;
         newLevelScript.GenerateSection();
 
-        Levels[positionInLevels] = newLevelObject;
+        Levels.Add(newLevelObject);
     }
 
     public static float CalcSpeedCharacter(int levelId)
@@ -140,11 +141,8 @@ public class LevelGenerator : MonoBehaviour
     public static void MoveLevels()
     {
         Levels[1].GetComponent<Level>().DestroyContent();
-        for (int i = 1; i < Levels.Length - 1; i++)
-        {
-            Levels[i] = Levels[i + 1];
-        }
-        GenerateLevel(Levels.Length - 1, Levels[^2].GetComponent<Level>().LevelId + 1);
+        Levels.RemoveAt(1);
+        GenerateLevel(Levels[^1].GetComponent<Level>().LevelId + 1);
     }
 
     private static System.Type GetLevelType(int level)
@@ -166,21 +164,21 @@ public class LevelGenerator : MonoBehaviour
 
     public static void DisplayPlatform()
     {
-        for (int i = 0; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Count; i++)
         {
             Levels[i].GetComponent<Level>().DisplayLevel();
         }
     }
     public static void UpdatePlatform()
     {
-        for (int i = 0; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Count; i++)
         {
             Levels[i].GetComponent<Level>().UpdateSection();
         }
     }
     public static void DeadPlayer()
     {
-        for (int i = 0; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Count; i++)
         {
             Levels[i].GetComponent<Level>().DestroyContent();
             Destroy(Levels[i].GetComponent<Level>().gameObject);
