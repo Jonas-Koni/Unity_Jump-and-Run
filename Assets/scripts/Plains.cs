@@ -91,6 +91,7 @@ public class Plains : Level
         float lastPosX = _positionPlatforms[^2].x + _numberBlocksInPlatform[^2] * _blockSize.y * _scaleBlock + MARGIN_X_LAST_BLOCK;
         float lastPosY = 0f;
         _positionPlatforms[^1] = new Vector2(lastPosX, lastPosY);
+        _numberBlocksInPlatform[^1] = 3;
 
         PosEnd = new Vector2(lastPosX + _numberBlocksInPlatform[^1] * _blockSize.y * _scaleBlock, lastPosY);
 
