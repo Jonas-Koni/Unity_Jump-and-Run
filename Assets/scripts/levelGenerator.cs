@@ -176,18 +176,4 @@ public class LevelGenerator : MonoBehaviour
             Levels[i].GetComponent<Level>().UpdateSection();
         }
     }
-    public static void DeadPlayer()
-    {
-        for (int i = 0; i < Levels.Count; i++)
-        {
-            Levels[i].GetComponent<Level>().DestroyContent();
-            Destroy(Levels[i].GetComponent<Level>().gameObject);
-        }
-        Seed = UnityEngine.Random.Range(0, 2000);
-        _randomLevel = new System.Random(Seed);
-        GenerateStartLevels();
-        DisplayPlatform();
-        //        LevelGenerator.Seed = UnityEngine.Random.Range(0, 2000);
-
-    }
 }
