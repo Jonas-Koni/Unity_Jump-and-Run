@@ -17,7 +17,7 @@ public class Wave : Maths
     public Vector2 WaveStart;
     public Vector2 WaveEnd;
 
-    private static int _numberOfPoints;
+    private int _numberOfPoints;
     private float _frequency;
     private float _wavelength;
     private float _addTime;
@@ -33,24 +33,22 @@ public class Wave : Maths
 
     public void DisplayWave()
     {
-        int seed = LevelGenerator.Seed;
-
-        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x + seed + 0.67f, 1f) + 10f); //PerlinNoise ersetzen!
-
         for (int pointIndex = 0; pointIndex < _numberOfPoints; pointIndex++)
         {
             float x = pointIndex * Scale;
-            float y = Mathf.Sin(2 * Mathf.PI * (Time.time * 50f * _frequency - x / _wavelength) + _addTime) * Amplitude - 2f;
+            float y = Mathf.Sin(2 * Mathf.PI * (Time.time * _frequency - x / _wavelength) + _addTime) * Amplitude - 2f;
 
             _lineRenderer.SetPosition(pointIndex, new Vector3(x + WaveStart.x, y, 0f));
         }
-        //Debug.Log(WaveStart + " " + Time);
     }
 
     public void GenerateSectionWave()
     {
-        int seed = LevelGenerator.Seed;
-        _numberOfPoints = (int)(20f * Mathf.PerlinNoise(WaveStart.x + seed + 0.67f, 1f) + 10f);
+        _numberOfPoints = (int)RandomConstantSpreadNumber.GetRandomNumber(10, 30);
+        _frequency = RandomPolynomialSpreadNumber.GetRandomNumber(1, 0.4f, 0.9f);
+        _wavelength = RandomPolynomialSpreadNumber.GetRandomNumber(1, 8, 22);
+        _addTime = RandomConstantSpreadNumber.GetRandomNumber(0, 2f * Mathf.PI);
+
         WaveEnd = new Vector2(WaveStart.x + _numberOfPoints * Scale + 4.5f + SpeedCharacter / 4f, 1f);
 
         _edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
@@ -59,11 +57,6 @@ public class Wave : Maths
         _lineRenderer.numCornerVertices = 3;
         _lineRenderer.numCapVertices = 3;
         _lineRenderer.widthMultiplier = 1f;
-
-        _frequency = 0.02f * Mathf.PerlinNoise(WaveStart.x * seed * 1.873f, 1f) + 0.004f;
-        _wavelength = 15f * Mathf.PerlinNoise(WaveStart.x * seed * 1.172f, 1f) + 8f;
-        _addTime = 2*Mathf.PI * Mathf.PerlinNoise(WaveStart.x * seed * 1.397f, 1f);
-
     }
 
     void SetEdgeCollider(LineRenderer lineRenderer)
