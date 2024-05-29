@@ -20,6 +20,7 @@ public class Wave : Maths
     private int _numberOfPoints;
     private float _frequency;
     private float _wavelength;
+    private float _amplitude;
     private float _addTime;
 
     private void Start()
@@ -35,8 +36,8 @@ public class Wave : Maths
     {
         for (int pointIndex = 0; pointIndex < _numberOfPoints; pointIndex++)
         {
-            float x = pointIndex * Scale;
-            float y = Mathf.Sin(2 * Mathf.PI * (Time.time * _frequency - x / _wavelength) + _addTime) * Amplitude - 2f;
+            float x = pointIndex * SCALE_X;
+            float y = Mathf.Sin(2 * Mathf.PI * (Time.time * _frequency - x / _wavelength) + _addTime) * _amplitude - 2f;
 
             _lineRenderer.SetPosition(pointIndex, new Vector3(x + WaveStart.x, y, 0f));
         }
@@ -44,12 +45,13 @@ public class Wave : Maths
 
     public void GenerateSectionWave()
     {
-        _numberOfPoints = (int)RandomConstantSpreadNumber.GetRandomNumber(10, 30);
+        _numberOfPoints = (int)RandomConstantSpreadNumber.GetRandomNumber(11, 25);
         _frequency = RandomPolynomialSpreadNumber.GetRandomNumber(1, 0.4f, 0.9f);
         _wavelength = RandomPolynomialSpreadNumber.GetRandomNumber(1, 8, 22);
+        _amplitude = RandomConstantSpreadNumber.GetRandomNumber(1.2f, 3.4f);
         _addTime = RandomConstantSpreadNumber.GetRandomNumber(0, 2f * Mathf.PI);
 
-        WaveEnd = new Vector2(WaveStart.x + _numberOfPoints * Scale + 4.5f + SpeedCharacter / 4f, 1f);
+        WaveEnd = new Vector2(WaveStart.x + _numberOfPoints * SCALE_X + 6f + SpeedCharacter / 4f, 1f);
 
         _edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
         _lineRenderer = gameObject.AddComponent<LineRenderer>();

@@ -2,24 +2,13 @@ using UnityEngine;
 
 public class Maths : Level
 {
-    //public static float Time;
-    public static float Scale;
-    public static float Amplitude;
-
-    private int _numberWaves;
+    protected const float SCALE_X = 0.5f;
+    private const int NUMBER_WAVES = 5;
     private GameObject[] _wavesObject;
-
-    private void Awake()
-    {
-        Scale = .5f;
-        Amplitude = 2f;
-
-        _numberWaves = 5;
-    }
 
     public override void GenerateSection()
     {
-        _wavesObject = new GameObject[_numberWaves];
+        _wavesObject = new GameObject[NUMBER_WAVES];
 
         for (int id = 0; id < _wavesObject.Length; id++)
         { 
