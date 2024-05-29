@@ -21,30 +21,24 @@ public class Maths : Level
     {
         _wavesObject = new GameObject[_numberWaves];
 
-        Wave firstWaveScript;
-        GameObject firstWaveObject = new GameObject("Wave");
-
-        firstWaveObject.layer = LayerMask.NameToLayer("ground");
-
-        firstWaveScript = firstWaveObject.AddComponent<Wave>();
-        firstWaveScript.WaveId = 0;
-        firstWaveScript.WaveStart = PosStart;
-        //firstWaveScript._wave = firstWaveObject;
-        firstWaveScript.GenerateSectionWave();
-        _wavesObject[0] = firstWaveObject;
-
-        for (int id = 1; id < _wavesObject.Length; id++)
+        for (int id = 0; id < _wavesObject.Length; id++)
         { 
-            Wave newWaveScript;
             GameObject newWaveObject;
+            newWaveObject = new GameObject("Wave")
+            {
+                layer = LayerMask.NameToLayer("ground")
+            };
 
-            newWaveObject = new GameObject("Wave");
-            newWaveObject.layer = LayerMask.NameToLayer("ground");
+            Wave newWaveScript;
             newWaveScript = newWaveObject.AddComponent<Wave>();
             newWaveScript.WaveId = id;
-
-            newWaveScript.WaveStart = new Vector2(_wavesObject[id - 1].GetComponent<Wave>().WaveEnd.x + 1f, 1f);
-            //firstWaveScript._wave = newWaveObject;
+            if(id == 0)
+            {
+                newWaveScript.WaveStart = PosStart;
+            } else
+            {
+                newWaveScript.WaveStart = new Vector2(_wavesObject[id - 1].GetComponent<Wave>().WaveEnd.x + 1f, 1f);
+            }
             newWaveScript.GenerateSectionWave();
 
             _wavesObject[id] = newWaveObject;
