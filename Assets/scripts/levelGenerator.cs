@@ -20,7 +20,6 @@ public class LevelGenerator : MonoBehaviour
     public static float gravityScale;
 
     public static int Seed;
-    public static int Time;
     public static int CurrentLevel;
     public static Sprite[] BookSprites;
     public static List<GameObject> Levels;
@@ -70,7 +69,6 @@ public class LevelGenerator : MonoBehaviour
     private void FixedUpdate()
     {
         UpdatePlatform();
-        Time++;
     }
 
     public static void GenerateStartLevels() //should be moved to Start (remove function), when DeadPlayer reload scene?

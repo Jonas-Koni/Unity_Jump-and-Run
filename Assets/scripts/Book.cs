@@ -109,7 +109,7 @@ public abstract class Book : German
     }
     public virtual float GetOscillationVelocity(float amplitude, float frequency)
     {
-        return amplitude * Mathf.Sin(LevelGenerator.Time * Time.deltaTime * frequency * 2f * Mathf.PI);
+        return amplitude * Mathf.Sin(Time.time * frequency * 2f * Mathf.PI);
     }
 }
 
