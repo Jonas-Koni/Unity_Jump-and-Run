@@ -1,13 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.VersionControl;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
-
-public enum BookType { Start, horizontal, vertical, diagonal, drop, old, End }
-
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -17,7 +10,7 @@ public class LevelGenerator : MonoBehaviour
     public GameObject GrassGameObject;
     public GameObject DirtGameObject;
 
-    public static float gravityScale;
+    public static float GravityScale;
 
     public static int Seed;
     public static int CurrentLevel;
@@ -46,7 +39,7 @@ public class LevelGenerator : MonoBehaviour
 
         BookSprites = Resources.LoadAll<Sprite>("books");
 
-        gravityScale = 3;
+        GravityScale = 3;
     }
 
     private void Start()
@@ -55,7 +48,7 @@ public class LevelGenerator : MonoBehaviour
         _characterScript = _characterFigure.GetComponent<Character>();
         _rigidbody = _characterFigure.GetComponent<Rigidbody2D>();
 
-        gravityScale = _rigidbody.gravityScale * 9.81f;
+        GravityScale = _rigidbody.gravityScale * 9.81f;
 
         GenerateStartLevels();
     }
@@ -71,7 +64,7 @@ public class LevelGenerator : MonoBehaviour
         UpdatePlatform();
     }
 
-    public static void GenerateStartLevels() //should be moved to Start (remove function), when DeadPlayer reload scene?
+    public static void GenerateStartLevels()
     {
         for (int id = 0; id < NUMBER_START_LEVELS; id++)
         {
@@ -83,7 +76,7 @@ public class LevelGenerator : MonoBehaviour
     public static void GenerateLevel(int levelId)
     {
         System.Type levelType = GetLevelType(levelId);
-        GameObject newLevelObject = new GameObject(levelType.ToString());
+        GameObject newLevelObject = new(levelType.ToString());
         Level newLevelScript = (Level) newLevelObject.AddComponent(levelType);
 
         newLevelScript.Rigidbody = _rigidbody;

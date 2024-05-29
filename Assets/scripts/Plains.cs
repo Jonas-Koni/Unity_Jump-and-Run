@@ -74,8 +74,8 @@ public class Plains : Level
 
             float randomMarginX = RandomConstantSpreadNumber.GetRandomNumber(RANDOM_MARGIN_X_MIN_VALUE, RANDOM_MARGIN_X_MAX_VALUE);
 
-            float root = Mathf.Sqrt(Mathf.Pow(speedY, 2) + 2 * LevelGenerator.gravityScale * jumpHeight);
-            float jumpWidth = speedX / LevelGenerator.gravityScale * (speedY + root) + randomMarginX;
+            float root = Mathf.Sqrt(Mathf.Pow(speedY, 2) + 2 * LevelGenerator.GravityScale * jumpHeight);
+            float jumpWidth = speedX / LevelGenerator.GravityScale * (speedY + root) + randomMarginX;
 
             float newPosX = _positionPlatforms[i - 1].x + _numberBlocksInPlatform[i - 1] * _blockSize.x * _scaleBlock + jumpWidth;
             float newPosY = _positionPlatforms[i - 1].y + jumpHeight;
