@@ -81,7 +81,7 @@ public class Wave : Maths
         lineRenderer.sharedMaterial = _materialLine;
     }
 
-    public void updateSectionWave()
+    public override void UpdateSection()
     {
         SetEdgeCollider(_lineRenderer);
         DisplayWave();

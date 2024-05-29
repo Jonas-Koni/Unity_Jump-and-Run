@@ -51,7 +51,7 @@ public class Maths : Level
     {
         for (int id = 0; id < _wavesObject.Length; id++)
         {
-            _wavesObject[id].GetComponent<Wave>().updateSectionWave();
+            _wavesObject[id].GetComponent<Wave>().UpdateSection();
         }
     }
 
