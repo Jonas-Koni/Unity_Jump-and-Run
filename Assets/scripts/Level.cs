@@ -13,6 +13,5 @@ public class Level : MonoBehaviour
     public virtual void GenerateSection() { } //LevelGenerator Start; CheckLevel
     public virtual void DisplayLevel() { } //GameObject Levels //Player Dead; StartLevels; CheckLevel
     public virtual void UpdateSection() {  } //Fixed Update
-    public virtual void RefreshData() { } //CheckLevel
     public virtual void DestroyContent() { } //CheckLevel; Dead Player
 }
