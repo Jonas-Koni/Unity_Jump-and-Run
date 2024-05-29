@@ -55,15 +55,6 @@ public class Maths : Level
         }
     }
 
-    public override void RefreshData()
-    {
-        _wavesObject[0].GetComponent<Wave>().WaveStart = PosStart;
-        for (int id = 0; id < _wavesObject.Length; id++)
-        {
-            _wavesObject[id].GetComponent<Wave>().RefreshDataWave();
-        }
-    }
-
     public override void DestroyContent()
     {
         for (int id = 0; id < _wavesObject.Length; id++)

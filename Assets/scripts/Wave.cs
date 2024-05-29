@@ -66,16 +66,6 @@ public class Wave : Maths
 
     }
 
-    public void RefreshDataWave()
-    {
-        //Debug.Log(PosStart + " " + WaveStart);
-
-        int seed = LevelGenerator.Seed;
-        //_frequency = 2f * Mathf.PerlinNoise(WaveStart.x * seed * 0.57f, 1f) + 0.4f;
-        //_wavelength = 15f * Mathf.PerlinNoise(WaveStart.x * seed * 0.35f, 1f) + 8f;
-
-    }
-
     void SetEdgeCollider(LineRenderer lineRenderer)
     {
         List<Vector2> edges = new();
