@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player_Life : MonoBehaviour
 {
@@ -31,14 +32,8 @@ public class Player_Life : MonoBehaviour
 
     private void Die()
     {
-        _character.transform.position = new Vector3(-5f, -2f, 0);
-        _character.GetComponent<Character>().MoveSpeed = 7f; //fester Wert?
-        _character.GetComponent<Character>().NotGroundedRemember = 0;
-        _character.GetComponent<Character>().JumpPressedRemember = 0;
-        //_levelGenerator.GetComponent<LevelGenerator>().DeadPlayer();
-        LevelGenerator.DeadPlayer();
-
-        //animator.SetTrigger("death");
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
     }
     private void Swim() //später auslagern
     {

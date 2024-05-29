@@ -40,7 +40,7 @@ public class Wave : Maths
         for (int pointIndex = 0; pointIndex < _numberOfPoints; pointIndex++)
         {
             float x = pointIndex * Scale;
-            float y = Mathf.Sin(2 * Mathf.PI * (LevelGenerator.Time * _frequency - x / _wavelength) + _addTime) * Amplitude - 2f;
+            float y = Mathf.Sin(2 * Mathf.PI * (Time.time * 50f * _frequency - x / _wavelength) + _addTime) * Amplitude - 2f;
 
             _lineRenderer.SetPosition(pointIndex, new Vector3(x + WaveStart.x, y, 0f));
         }

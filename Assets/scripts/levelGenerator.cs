@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using static Cinemachine.DocumentationSortingAttribute;
@@ -17,24 +19,19 @@ public class LevelGenerator : MonoBehaviour
 
     public static float gravityScale;
 
-    enum LevelState 
-    { 
-        plains, 
-        maths, 
-        german, 
-        physics, 
-        biology, 
-        english, 
-        history 
-    }
-
     public static int Seed;
-    public static int Time;
     public static int CurrentLevel;
     public static Sprite[] BookSprites;
-    public static GameObject[] Levels;
+    public static List<GameObject> Levels;
 
+    private const float START_SPEED = 7f;
     private const float MAX_SPEED = 15f;
+    private const float DECREASE_SPEED = 11f; //see Documentation! (not existing right now)
+    private const int NUMBER_CONSTANT_SPEED_LEVELS = 3;
+
+    private const int NUMBER_START_LEVELS = 4;
+
+
     private static GameObject _characterFigure;
     private static Character _characterScript;
     private static Rigidbody2D _rigidbody;
@@ -43,7 +40,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Awake()
     {
-        Levels = new GameObject[4];
+        Levels = new List<GameObject>();
         Seed = UnityEngine.Random.Range(0, 2000);
         _randomLevel = new System.Random(Seed);
 
@@ -60,187 +57,121 @@ public class LevelGenerator : MonoBehaviour
 
         gravityScale = _rigidbody.gravityScale * 9.81f;
 
-        GenerateFirstLevel(); //level1
-        GenerateStartLevels(); //level 2 to lentgh -1
+        GenerateStartLevels();
     }
 
 
     private void Update()
     {
-        //Debug.Log(Time);
-        CheckLevel(_rigidbody.transform.position.x);
+        CheckLevel();
     }
 
     private void FixedUpdate()
     {
         UpdatePlatform();
-        Time++;
     }
 
-    public static void GenerateFirstLevel()
+    public static void GenerateStartLevels() //should be moved to Start (remove function), when DeadPlayer reload scene?
     {
-        Level firstLevelScript;
-        GameObject firstLevelObject = new GameObject("Plains");
-        firstLevelScript = firstLevelObject.AddComponent<Plains>();
-
-        firstLevelScript.CharacterScript = _characterScript;
-        firstLevelScript.Rigidbody = _rigidbody;
-        firstLevelScript.LevelId = 0;
-        firstLevelScript.SpeedCharacter = _characterScript.MoveSpeed; //notwendig?
-        firstLevelScript.PosStart = new Vector2(-7f, 0f);
-        firstLevelScript.GenerateSection();
-        Levels[0] = firstLevelObject;
-
-    }
-
-    public static void GenerateStartLevels() //level 2-7
-    {
-        for (int id = 1; id < Levels.Length; id++) //level 2-7
+        for (int id = 0; id < NUMBER_START_LEVELS; id++)
         {
-            int currentLevel = id;
-            GenerateLevel(currentLevel, id);
+            GenerateLevel(id);
         }
         DisplayPlatform();
     }
 
-    public static void GenerateLevel(int positionInLevels, int levelId)
+    public static void GenerateLevel(int levelId)
     {
-        LevelState currentLevelState = (LevelState)GetLevelState(levelId);
-        Level newLevelScript;
-        GameObject newLevelObject;
-        switch (currentLevelState)
-        {
-            case LevelState.plains:
-                newLevelObject = new GameObject("Plains");
-                newLevelScript = newLevelObject.AddComponent<Plains>();
-                break;
+        System.Type levelType = GetLevelType(levelId);
+        GameObject newLevelObject = new GameObject(levelType.ToString());
+        Level newLevelScript = (Level) newLevelObject.AddComponent(levelType);
 
-            case LevelState.maths:
-                newLevelObject = new GameObject("Maths");
-                newLevelScript = newLevelObject.AddComponent<Maths>();
-                break;
-            case LevelState.german:
-                newLevelObject = new GameObject("German");
-                newLevelScript = newLevelObject.AddComponent<German>();
-                break;
-            case LevelState.physics:
-                newLevelObject = new GameObject("Physic");
-                newLevelScript = newLevelObject.AddComponent<Physic>();
-                break;
-            default:
-                return;
-                //case levelState.physics:
-                //newLevel = new Physics(levelId, PositionList, false);
-
-        }
         newLevelScript.Rigidbody = _rigidbody;
         newLevelScript.CharacterScript = _characterScript;
         newLevelScript.LevelId = levelId;
-        newLevelScript.SpeedCharacter = CalcSpeedCharacter(positionInLevels, levelId);
-        newLevelScript.PosStart = new Vector2(Levels[positionInLevels - 1].GetComponent<Level>().PosEnd.x + 1f, 1f);
+        newLevelScript.SpeedCharacter = CalcSpeedCharacter(levelId);
 
+        Vector2 posStart;
+        if(levelId == 0)
+        {
+            posStart = new Vector2(-7f, 0f);
+        } else
+        {
+            Level previousLevel = Levels[^1].GetComponent<Level>();
+            posStart = new Vector2(previousLevel.PosEnd.x + 1f, 1f);
+        }
+        newLevelScript.PosStart = posStart;
         newLevelScript.GenerateSection();
 
-
-        Levels[positionInLevels] = newLevelObject;
-        
+        Levels.Add(newLevelObject);
     }
 
-    public static float CalcSpeedCharacter(int positionInLevels, int levelId)
+    public static float CalcSpeedCharacter(int levelId)
     {
-        bool inStartLevels = levelId < 6;
-        if (inStartLevels)
+        if (levelId < NUMBER_CONSTANT_SPEED_LEVELS)
         {
-            return _characterScript.MoveSpeed;
+            return START_SPEED;
         }
 
-        float newSpeed = Levels[positionInLevels - 1].GetComponent<Level>().SpeedCharacter * 1.05f;
-        bool tooFast = newSpeed >= MAX_SPEED;
-        if (tooFast)
-        {
-            return MAX_SPEED;
-        }
+        float a = MAX_SPEED - START_SPEED;
+        float b = -1f / 10f * Mathf.Log((MAX_SPEED - DECREASE_SPEED) / a, 2f);
+        float c = MAX_SPEED;
+        float n = levelId - NUMBER_CONSTANT_SPEED_LEVELS;
 
-        return newSpeed;
+        return -a * Mathf.Pow(2, -b * n) + c;
     }
 
-    public static void CheckLevel(float posX)
+    private static void CheckLevel()
     {
-        bool playerLeftToLevelEnd = posX < Levels[^2].GetComponent<Level>().PosEnd.x;
+        bool playerLeftToLevelEnd = _rigidbody.transform.position.x < Levels[^2].GetComponent<Level>().PosEnd.x;
         _characterScript.MoveSpeed = Levels[^2].GetComponent<Level>().SpeedCharacter;
 
         if (playerLeftToLevelEnd)
         {
             return;
         }
-        CurrentLevel = Levels[Levels.Length - 1].GetComponent<Level>().LevelId;
-        //DestroyLevels();
+        CurrentLevel = Levels[^1].GetComponent<Level>().LevelId;
         MoveLevels();
         DisplayPlatform();
-        RefreshData();
-    }
-    public static void RefreshData()
-    {
-        for (int levelIndex = 0; levelIndex < Levels.Length; levelIndex++)
-        {
-            Levels[levelIndex].GetComponent<Level>().RefreshData();
-        }
     }
 
-    public static void DestroyLevels()
-    {
-        Levels[1].GetComponent<Level>().DestroyContent();
-        Destroy(Levels[1].GetComponent<Level>().gameObject);
-    }
 
     public static void MoveLevels()
     {
         Levels[1].GetComponent<Level>().DestroyContent();
-        for (int i = 1; i < Levels.Length - 1; i++)
-        {
-            Levels[i] = Levels[i + 1];
-        }
-        GenerateLevel(Levels.Length - 1, Levels[^2].GetComponent<Level>().LevelId + 1);
+        Levels.RemoveAt(1);
+        GenerateLevel(Levels[^1].GetComponent<Level>().LevelId + 1);
     }
 
-    private static LevelState GetLevelState(int level)
+    private static System.Type GetLevelType(int level)
     {
-        if (level == 0)
+        if(level == 0)
         {
-            return LevelState.plains;
+            return typeof(Plains);
         }
-        //return LevelState.plains;
-        //return LevelState.physics;
-        LevelState randomNmb = (LevelState)(_randomLevel.Next(0, 4));
-        return randomNmb;
+        int randomLevelType = _randomLevel.Next(0, 4);
+        return randomLevelType switch
+        {
+            0 => typeof(Plains),
+            1 => typeof(Maths),
+            2 => typeof(German),
+            3 => typeof(Physic),
+            _ => throw new InvalidOperationException()
+        };
     }
 
     public static void DisplayPlatform()
     {
-        for (int i = 0; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Count; i++)
         {
             Levels[i].GetComponent<Level>().DisplayLevel();
         }
     }
     public static void UpdatePlatform()
     {
-        for (int i = 0; i < Levels.Length; i++)
+        for (int i = 0; i < Levels.Count; i++)
         {
             Levels[i].GetComponent<Level>().UpdateSection();
         }
-    }
-    public static void DeadPlayer()
-    {
-        for (int i = 1; i < Levels.Length; i++)
-        {
-            Levels[i].GetComponent<Level>().DestroyContent();
-            Destroy(Levels[i].GetComponent<Level>().gameObject);
-        }
-        Seed = UnityEngine.Random.Range(0, 2000);
-        _randomLevel = new System.Random(Seed);
-        GenerateStartLevels();
-        DisplayPlatform();
-        //        LevelGenerator.Seed = UnityEngine.Random.Range(0, 2000);
-
     }
 }

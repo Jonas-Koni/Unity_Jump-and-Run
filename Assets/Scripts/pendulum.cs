@@ -203,7 +203,7 @@ public class Pendulum : Physic
         float forceWind = 2f * WIND_FORCE_AMPLITUDE
     * (Mathf.PerlinNoise(
         SCALE_NOISE_POSX * _pendulumPosCenterBall.x,
-        SCALE_NOISE_TIME * LevelGenerator.Time)
+        SCALE_NOISE_TIME * Time.time * 50f)
     - 0.5f);
 
         float alpha = -_angleWeightPendulum;
